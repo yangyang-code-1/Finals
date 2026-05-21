@@ -7,9 +7,6 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20251015123430 extends AbstractMigration
 {
     public function getDescription(): string
@@ -19,10 +16,23 @@ final class Version20251015123430 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649B7970CF8');
-        $this->addSql('DROP INDEX IDX_8D93D649B7970CF8 ON user');
-        $this->addSql('ALTER TABLE user DROP artist_id');
+        if (!$schema->hasTable('user')) {
+            return;
+        }
+    
+        $table = $schema->getTable('user');
+    
+        if ($table->hasForeignKey('FK_8D93D649B7970CF8')) {
+            $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649B7970CF8');
+        }
+    
+        if ($table->hasIndex('IDX_8D93D649B7970CF8')) {
+            $this->addSql('DROP INDEX IDX_8D93D649B7970CF8 ON user');
+        }
+    
+        if ($table->hasColumn('artist_id')) {
+            $this->addSql('ALTER TABLE user DROP artist_id');
+        }
     }
 
     public function down(Schema $schema): void
