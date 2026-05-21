@@ -1,0 +1,26 @@
+{# VGen-style featured commission cards using project artwork #}
+{% set featured = [
+  { title: 'Character Design Commission', price: 'From $75', rating: '5.0', reviews: 63, image: 'Character_design.PNG' },
+  { title: 'Portrait Art — Semi-realism', price: 'From $50', rating: '5.0', reviews: 131, image: 'Portrait.JPG' },
+  { title: 'Sunset Scene Illustration', price: 'From $90', rating: '4.9', reviews: 47, image: 'Sunset.jpg' },
+  { title: 'Birthday Photoshoot Style', price: 'From $65', rating: '5.0', reviews: 54, image: 'birthday_photoshoot.jpg' },
+  { title: 'Custom Illustration Pack', price: 'From $100', rating: '5.0', reviews: 70, image: 'illustration.png' },
+  { title: 'Icon & Avatar Bundle', price: 'From $35', rating: '4.8', reviews: 29, image: 'icon.jpg' },
+] %}
+
+<div class="commission-scroll" aria-label="Featured open commissions">
+  {% for item in featured %}
+    <a href="{{ path('app_commissions_browse') }}" class="commission-card">
+      <div class="commission-thumb" style="background-image:url('{{ asset('commissions_images/' ~ item.image) }}');">
+        <span class="badge-open">OPEN</span>
+      </div>
+      <div class="commission-body">
+        <h3>{{ item.title }}</h3>
+        <div class="commission-meta">
+          <span class="rating"><i class="bi bi-star-fill"></i> {{ item.rating }} ({{ item.reviews }})</span>
+          <span class="price">{{ item.price }}</span>
+        </div>
+      </div>
+    </a>
+  {% endfor %}
+</div>

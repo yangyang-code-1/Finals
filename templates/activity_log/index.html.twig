@@ -1,0 +1,321 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Activity Logs{% endblock %}
+{% block header %}Activity Logs{% endblock %}
+
+{% block body %}
+<style>
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .section-title {
+    position: relative;
+    display: inline-block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #370d46ff;
+    margin: 0;
+    padding-bottom: 0.5rem;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #7c3aed, #a855f7);
+    border-radius: 2px;
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid #e2e8f0;
+    background: white;
+    color: #475569;
+  }
+
+  .filter-btn:hover {
+    background: #f8f9ff;
+    border-color: #7c3aed;
+    color: #7c3aed;
+  }
+
+  .filter-btn.active {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    border-color: #7c3aed;
+    color: white;
+  }
+
+  .table-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    overflow: hidden;
+    border: 1px solid rgba(139, 92, 246, 0.1);
+  }
+
+  .table thead {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+  }
+
+  .table thead th {
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+  }
+
+  .table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f8f9ff;
+    transform: scale(1.01);
+  }
+
+  .table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    color: #475569;
+  }
+
+  .action-badge {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .action-badge.login {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .action-badge.logout {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .action-badge.create {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .action-badge.update {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .action-badge.delete {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .role-badge {
+    padding: 0.3rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .role-badge.admin {
+    background: linear-gradient(135deg, #ef444420, #f8717140);
+    color: #991b1b;
+  }
+
+  .role-badge.staff {
+    background: linear-gradient(135deg, #3b82f620, #60a5fa40);
+    color: #1e40af;
+  }
+
+  .role-badge.user {
+    background: linear-gradient(135deg, #10b98120, #34d39940);
+    color: #065f46;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .user-name {
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .user-email {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+
+  .entity-info {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+</style>
+
+<div class="section-header">
+  <h3 class="section-title">
+    <i class="bi bi-clock-history me-2"></i>Activity Logs
+  </h3>
+  
+  <div class="filter-buttons">
+    <a href="{{ path('app_activity_log_index') }}" 
+       class="filter-btn {% if not action_filter %}active{% endif %}">
+      <i class="bi bi-list-ul"></i> All
+    </a>
+    <a href="{{ path('app_activity_log_index', {'action': 'Login'}) }}" 
+       class="filter-btn {% if action_filter == 'Login' %}active{% endif %}">
+      <i class="bi bi-box-arrow-in-right"></i> Login
+    </a>
+    <a href="{{ path('app_activity_log_index', {'action': 'Logout'}) }}" 
+       class="filter-btn {% if action_filter == 'Logout' %}active{% endif %}">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
+    <a href="{{ path('app_activity_log_index', {'action': 'Create'}) }}" 
+       class="filter-btn {% if action_filter == 'Create' %}active{% endif %}">
+      <i class="bi bi-plus-circle"></i> Create
+    </a>
+    <a href="{{ path('app_activity_log_index', {'action': 'Update'}) }}" 
+       class="filter-btn {% if action_filter == 'Update' %}active{% endif %}">
+      <i class="bi bi-pencil"></i> Update
+    </a>
+    <a href="{{ path('app_activity_log_index', {'action': 'Delete'}) }}" 
+       class="filter-btn {% if action_filter == 'Delete' %}active{% endif %}">
+      <i class="bi bi-trash"></i> Delete
+    </a>
+  </div>
+</div>
+
+<div class="table-container">
+  <table id="activityLogTable" class="table table-hover mb-0 data-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Role</th>
+        <th>Action</th>
+        <th>Entity</th>
+        <th>Description</th>
+        <th>Date/Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+        <tr>
+          <td><strong>#{{ log.id }}</strong></td>
+          <td>
+            {% if log.user %}
+              <div class="user-info">
+                <i class="bi bi-person-circle" style="color: #7c3aed;"></i>
+                <div>
+                  <div class="user-name">{{ log.user.name }}</div>
+                  <div class="user-email">{{ log.user.email }}</div>
+                </div>
+              </div>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if log.role == 'ROLE_ADMIN' %}
+              <span class="role-badge admin">Admin</span>
+            {% elseif log.role == 'ROLE_STAFF' %}
+              <span class="role-badge staff">Staff</span>
+            {% elseif log.role == 'ROLE_USER' %}
+              <span class="role-badge user">User</span>
+            {% else %}
+              <span class="text-muted">{{ log.role }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="action-badge {{ log.action|lower }}">
+              {{ log.action }}
+            </span>
+          </td>
+          <td>
+            {% if log.entityType %}
+              <div class="entity-info">
+                <i class="bi bi-tag me-1"></i>
+                {{ log.entityType }}
+                {% if log.entityId %}
+                  <span class="text-muted">#{{ log.entityId }}</span>
+                {% endif %}
+              </div>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="entity-info">
+              {{ log.description|default('—') }}
+            </div>
+          </td>
+          <td>
+            <div class="entity-info">
+              <i class="bi bi-calendar3 me-1"></i>
+              {{ log.createdAt ? log.createdAt|date('Y-m-d H:i:s') : '—' }}
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="7" class="text-center py-4">
+            <div class="text-muted">
+              <i class="bi bi-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+              No activity logs found.
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  $(document).ready(function() {
+    if (document.getElementById('activityLogTable')) {
+      $('#activityLogTable').DataTable({
+        pageLength: 25,
+        lengthMenu: [10, 25, 50, 100],
+        order: [[0, 'desc']],
+        language: {
+          search: "🔍 Search:",
+          lengthMenu: "_MENU_ per page",
+          info: "Showing _START_ to _END_ of _TOTAL_ logs",
+          zeroRecords: "No matching records found",
+          paginate: { next: "›", previous: "‹" }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}
+

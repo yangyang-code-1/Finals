@@ -1,0 +1,147 @@
+{% extends 'public/layout.html.twig' %}
+
+{% block title %}Contact Comms — We're here to help{% endblock %}
+
+{% block body %}
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="lead" style="margin-bottom:0.5rem;font-size:0.95rem;letter-spacing:0.12em;text-transform:uppercase;opacity:0.92;">
+        Let's start something creative
+      </p>
+      <h1>Contact <span>Comms</span></h1>
+      <p class="lead">Have a question, collab idea, or ready to scope a commission? We read every message.</p>
+      <p class="sub">Typical reply within 48 hours — faster during demo season.</p>
+    </div>
+  </section>
+
+  <div class="page-section">
+    <div class="stats-strip reveal">
+      <div class="stat-card"><strong>&lt;48h</strong><span>Response goal</span></div>
+      <div class="stat-card"><strong>7</strong><span>Days a week monitoring</span></div>
+      <div class="stat-card"><strong>100%</strong><span>Human replies</span></div>
+      <div class="stat-card"><strong>Brevo</strong><span>Secure mail delivery</span></div>
+    </div>
+  </div>
+
+  <section class="section-block" style="padding-top:0;">
+    <div class="page-section reveal">
+      <div class="contact-grid">
+        <div>
+          <div class="section-head" style="text-align:left;margin:0 0 1.5rem;">
+            <div class="kicker"><i class="bi bi-chat-heart"></i> Reach us</div>
+            <h2 style="text-align:left;">Pick your channel</h2>
+            <p style="text-align:left;margin:0;">Choose what fits — we route everything to the right teammate.</p>
+          </div>
+
+          <div class="contact-card">
+            <h3><i class="bi bi-envelope-fill" style="color:#7c3aed;"></i> Email</h3>
+            <p><a href="mailto:contact@comms.example" style="color:#7c3aed;font-weight:900;text-decoration:none;">contact@comms.example</a> — general inquiries &amp; partnerships</p>
+          </div>
+          <div class="contact-card">
+            <h3><i class="bi bi-discord" style="color:#7c3aed;"></i> Community</h3>
+            <p>Join our Discord for quick questions, WIP shares, and commission spotlights (link coming soon).</p>
+          </div>
+          <div class="contact-card">
+            <h3><i class="bi bi-clock-fill" style="color:#7c3aed;"></i> Hours</h3>
+            <p>Mon–Fri 9am–6pm PHT · Weekend monitoring for urgent demo support.</p>
+          </div>
+          <div class="contact-card">
+            <h3><i class="bi bi-geo-alt-fill" style="color:#7c3aed;"></i> Based in</h3>
+            <p>Philippines — serving clients and artists worldwide online.</p>
+          </div>
+
+          <div class="pillars" style="grid-template-columns:1fr;margin-top:1.25rem;">
+            <article class="pillar-card" style="padding:1.25rem;">
+              <h3 style="margin:0 0 0.5rem;font-size:1rem;">Commission inquiry?</h3>
+              <p style="margin:0;">Include your budget range, deadline, and reference links — artists love context.</p>
+            </article>
+          </div>
+        </div>
+
+        <div>
+          {% if contactSent %}
+            <div class="contact-success">Thanks! Your message was sent. We'll get back to you soon.</div>
+          {% endif %}
+
+          {% for label, messages in app.flashes %}
+            {% for message in messages %}
+              <div class="alert alert-{{ label == 'danger' ? 'danger' : 'info' }}" style="border-radius:14px;margin-bottom:1rem;font-weight:800;">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endfor %}
+
+          <form class="contact-form" action="{{ path('app_contact') }}" method="POST">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('contact_form') }}">
+            <h3 style="margin:0 0 1rem;font-weight:900;color:#4b0082;">Send a message</h3>
+            <div class="form-row">
+              <div>
+                <label for="contact-name">Name</label>
+                <input id="contact-name" name="name" type="text" required value="{{ app.request.request.get('name')|default('')|e }}">
+              </div>
+              <div>
+                <label for="contact-email">Email</label>
+                <input id="contact-email" name="email" type="email" required value="{{ app.request.request.get('email')|default('')|e }}">
+              </div>
+            </div>
+            <label for="contact-subject">Subject</label>
+            <input id="contact-subject" name="subject" type="text" required value="{{ app.request.request.get('subject')|default('')|e }}">
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" name="message" required rows="6">{{ app.request.request.get('message')|default('')|e }}</textarea>
+            <button class="contact-submit" type="submit"><i class="bi bi-send-fill me-2"></i>Send message</button>
+            <p style="text-align:center;margin:1rem 0 0;color:#666;font-weight:700;font-size:0.92rem;">
+              By sending, you agree we may reply via email. No spam — ever.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" style="background:linear-gradient(180deg, rgba(124,58,237,0.04), transparent);">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-lightning-charge-fill"></i> While you wait</div>
+        <h2>Explore open commissions</h2>
+        <p>Not ready to message? Scroll featured listings instead.</p>
+      </div>
+      {% include 'public/_featured_commissions.html.twig' %}
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-question-circle"></i> FAQ</div>
+        <h2>Before you write</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button type="button" class="faq-q">What should I put in my message? <i class="bi bi-chevron-down"></i></button>
+          <div class="faq-a">Tell us what you want commissioned, your timeline, budget range, and any reference images or links. The more context, the faster we can help.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">Is my data safe? <i class="bi bi-chevron-down"></i></button>
+          <div class="faq-a">Messages are emailed via our configured mailer (Brevo). We don't sell your info — it's only used to respond to you.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">Can I request a specific artist? <i class="bi bi-chevron-down"></i></button>
+          <div class="faq-a">Yes! Mention their name or link a browse listing. We'll do our best to match you.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">I'm a professor or reviewer <i class="bi bi-chevron-down"></i></button>
+          <div class="faq-a">Welcome! Ask for a demo walkthrough — we're proud of the VGen-inspired UX and Symfony stack under the hood.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" style="padding-bottom:5rem;">
+    <div class="cta-band reveal">
+      <h2>Still scrolling? Good.</h2>
+      <p>That means the page is doing its job. When you're ready, browse commissions or create an account.</p>
+      <a href="{{ path('app_commissions_browse') }}" class="btn-hero">Browse commissions</a>
+      <a href="{{ path('app_register') }}" class="btn-hero ghost">Create account</a>
+    </div>
+  </section>
+{% endblock %}

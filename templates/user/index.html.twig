@@ -1,0 +1,215 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}User Management{% endblock %}
+{% block header %}Users{% endblock %}
+
+{% block body %}
+<style>
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .add-user-btn {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+
+  .add-user-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+    color: white;
+  }
+
+  .table-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    overflow: hidden;
+    border: 1px solid rgba(139, 92, 246, 0.1);
+  }
+
+  .table thead {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+  }
+
+  .table thead th {
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+  }
+
+  .table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f8f9ff;
+    transform: scale(1.01);
+  }
+
+  .table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    color: #475569;
+  }
+
+  .role-badge {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .role-badge.admin {
+    background: linear-gradient(135deg, #ef444420, #f8717140);
+    color: #991b1b;
+  }
+
+  .role-badge.staff {
+    background: linear-gradient(135deg, #3b82f620, #60a5fa40);
+    color: #1e40af;
+  }
+
+  .role-badge.user {
+    background: linear-gradient(135deg, #10b98120, #34d39940);
+    color: #065f46;
+  }
+
+  .user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: #f1f5f9;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: #475569;
+  }
+
+  .user-badge i {
+    color: #7c3aed;
+  }
+</style>
+
+<div class="section-header">
+  <h3 class="section-title" style="position: relative; display: inline-block; font-size: 1.5rem; font-weight: 700; color: #370d46ff; margin: 0; padding-bottom: 0.5rem;">
+    <i class="bi bi-people me-2"></i>User Management
+    <span style="position: absolute; bottom: 0; left: 0; width: 60px; height: 3px; background: linear-gradient(90deg, #7c3aed, #a855f7); border-radius: 2px;"></span>
+  </h3>
+  
+  <a href="{{ path('app_user_new') }}" class="add-user-btn">
+    <i class="bi bi-plus-circle"></i> Add New User
+  </a>
+</div>
+
+<div class="table-container">
+  <table id="userTable" class="table table-hover mb-0 data-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Created At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+        <tr>
+          <td><strong>#{{ user.id }}</strong></td>
+          <td>
+            <i class="bi bi-person-circle me-2" style="color: #7c3aed;"></i>
+            {{ user.name }}
+          </td>
+          <td>
+            <span class="user-badge">
+              <i class="bi bi-envelope"></i>
+              {{ user.email }}
+            </span>
+          </td>
+          <td>
+            {% if user.role == 'ROLE_ADMIN' %}
+              <span class="role-badge admin">
+                <i class="bi bi-shield-check"></i>
+                Admin
+              </span>
+            {% elseif user.role == 'ROLE_STAFF' %}
+              <span class="role-badge staff">
+                <i class="bi bi-briefcase"></i>
+                Staff
+              </span>
+            {% else %}
+              <span class="role-badge user">
+                <i class="bi bi-person"></i>
+                User
+              </span>
+            {% endif %}
+          </td>
+          <td>{{ user.createdAt ? user.createdAt|date('Y-m-d') : '—' }}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <a href="{{ path('app_user_show', {'id': user.id}) }}" 
+                 class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-eye"></i>
+              </a>
+              <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
+                 class="btn btn-sm btn-outline-warning">
+                <i class="bi bi-pencil"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            <div class="text-muted">
+              <i class="bi bi-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+              No users found. <a href="{{ path('app_user_new') }}">Create your first user</a>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  $(document).ready(function() {
+    if (document.getElementById('userTable')) {
+      $('#userTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [[0, 'desc']],
+        language: {
+          search: "🔍 Search:",
+          lengthMenu: "_MENU_ per page",
+          info: "Showing _START_ to _END_ of _TOTAL_ users",
+          zeroRecords: "No matching records found",
+          paginate: { next: "›", previous: "‹" }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

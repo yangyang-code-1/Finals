@@ -1,0 +1,94 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}New Category{% endblock %}
+{% block header %}Create New Category{% endblock %}
+
+{% block body %}
+<style>
+  .form-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .form-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #f1f5f9;
+  }
+
+  .form-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #7c3aed20, #a855f740);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #7c3aed;
+  }
+
+  .form-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  .form-subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #7c3aed;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+  }
+
+  .back-link:hover {
+    background: #f8f9ff;
+    transform: translateX(-5px);
+    color: #6d28d9;
+  }
+
+  .back-link i {
+    font-size: 1.2rem;
+  }
+</style>
+
+<a href="{{ path('app_category_index') }}" class="back-link">
+  <i class="bi bi-arrow-left-circle"></i> Back to Categories
+</a>
+
+<div class="form-container">
+  <div class="form-header">
+    <div class="form-icon">
+      <i class="bi bi-folder-plus"></i>
+    </div>
+    <div>
+      <h1 class="form-title">Create New Category</h1>
+      <p class="form-subtitle">Add a new commission category to organize your services</p>
+    </div>
+  </div>
+
+  {{ include('category/_form.html.twig') }}
+</div>
+
+{% endblock %}

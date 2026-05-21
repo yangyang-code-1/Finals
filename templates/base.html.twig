@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+
+    <style>
+        /* Transparent navbar that blends with hero */
+        nav.navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: transparent;
+            box-shadow: none;
+            z-index: 1000;
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        /* Make navbar links visible over hero */
+        nav.navbar a.nav-link,
+        nav.navbar .navbar-brand {
+            color: white !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav.navbar a.nav-link:hover {
+            color: #f3e8ff !important;
+        }
+
+        /* When scrolled past hero, change navbar to solid */
+        .navbar.scrolled {
+            background-color: white;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        .navbar.scrolled a.nav-link,
+        .navbar.scrolled .navbar-brand {
+            color: #4b0082 !important; /* dark purple text */
+        }
+
+        .input-search {
+            background: rgba(255,255,255,0.95) !important;
+            border: 1px solid rgba(0,0,0,0.06) !important;
+            border-radius: 10px !important;
+            padding: 0.55rem 0.9rem !important;
+            width: 220px !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+        }
+
+        .avatar img { 
+            border: 2px solid rgba(255,255,255,0.9) !important; 
+        }
+
+        #avatar-dropdown { 
+            top: calc(100% + 8px) !important; 
+            right: 0 !important; 
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: rgb(200, 162, 200);
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #ebd3feff, #c084fc);
+            border-top: 2px solid #fff;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+            padding: 3rem 1.5rem 1rem;
+            color: #6b21a8;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-column ul li a {
+            color: #4b0082;
+            text-decoration: none;
+        }
+
+        .footer-column ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #6b21a8;
+        }
+
+        /* Optional: Social icons styling (if using Font Awesome) */
+        .social-icons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .social {
+            color: #4b0082;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .social:hover {
+            color: #7c3aed;
+        }
+    </style>
+
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="flex-1">
+                <!-- Updated: Logo now links explicitly to HomeController index via Twig path -->
+                <a class="btn btn-ghost" href="{{ path('app_home') }}" rel="home">
+                    <img src="/Primary Logo.png" alt="ArtComms Logo" style="height:40px; object-fit: contain;">
+                </a>
+            </div>
+
+            <div class="flex-none items-center" style="gap: 1.5rem;">
+                <input type="text" placeholder="Search" class="input-search"/>
+                <div class="dropdown dropdown-end" style="position:relative;">
+                    <div id="avatar-btn" tabindex="0" role="button" class="btn btn-ghost btn-circle avatar" onclick="toggleDropdown()">
+                        <img src="/PROFILE.png" alt="User Avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                    </div>
+                    <ul id="avatar-dropdown" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                        {% if app.user %}
+                            <li><a href="{{ path('app_account') }}">Account</a></li>
+                            <li><a href="{{ path('app_commission_index') }}">Commissions</a></li>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li><a href="{{ path('app_admin_dashboard') }}">Admin Dashboard</a></li>
+                            {% endif %}
+                            <li><a href="#">Settings</a></li>
+                            <li><a href="{{ path('app_logout') }}">Logout</a></li>
+                        {% else %}
+                            <li><a href="{{ path('app_login') }}">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>About Us</h3>
+                <p>
+                    Where talent meets opportunity.
+                </p>
+                <p>
+                    We connect artists and clients through commissions and digital creativity.
+                    Bringing art to life, one project at a time.
+                </p>
+            </div>
+
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Home</a></li> <!-- Updated to use Twig path -->
+                    <li><a href="{{ path('app_commission_index') }}">Commissions</a></li> <!-- Assuming this route exists -->
+                    <li><a href="#">Portfolio</a></li>
+                    <li><a href="#">FAQs</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="mailto:support@yourwebsite.com">comms@support.com</a></li>
+                    <li><a href="#">+63 912 345 6789</a></li>
+                    <li>
+                        <div class="social-icons">
+                            <a href="#" class="social" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social" title="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social" title="Twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; {{ "now"|date("Y") }} Comms. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById('avatar-dropdown');
+            dropdown.style.display = (dropdown.style.display === 'none' || dropdown.style.display === '') ? 'block' : 'none';
+        }
+
+        document.addEventListener('click', function(event) {
+            const avatarBtn = document.getElementById('avatar-btn');
+            const dropdown = document.getElementById('avatar-dropdown');
+            if (!avatarBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+        
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>

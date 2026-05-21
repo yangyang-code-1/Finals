@@ -1,0 +1,50 @@
+<footer class="site-footer" id="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="{{ asset('Primary Logo.png') }}" alt="Comms">
+      <p>
+        For the love of human creativity. Comms connects clients and artists through transparent commissions,
+        verified listings, and a marketplace built for scroll-worthy discovery.
+      </p>
+      <div class="footer-social" aria-label="Social links">
+        <a href="#" title="Twitter / X"><i class="bi bi-twitter-x"></i></a>
+        <a href="#" title="Instagram"><i class="bi bi-instagram"></i></a>
+        <a href="#" title="Discord"><i class="bi bi-discord"></i></a>
+        <a href="#" title="YouTube"><i class="bi bi-youtube"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <a href="{{ path('app_home') }}#home">Home</a>
+      <a href="{{ path('app_commissions_browse') }}">Browse commissions</a>
+      <a href="{{ path('app_about') }}">About us</a>
+      <a href="{{ path('app_contact') }}">Contact</a>
+      <a href="{{ path('app_register') }}">Create account</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>For creators</h4>
+      <a href="{{ path('app_commissions_browse') }}">Open listings</a>
+      <a href="{{ path('app_contact') }}">Partner with us</a>
+      <a href="{{ path('app_about') }}#team">Meet the team</a>
+      <a href="{{ path('app_login') }}">Staff login</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Stay in the loop</h4>
+      <p style="margin:0 0 0.75rem;font-weight:650;opacity:0.88;line-height:1.6;font-size:0.92rem;">
+        New drops, featured artists, and commission tips — no spam, just art.
+      </p>
+      <form class="footer-newsletter" onsubmit="return false;" aria-label="Newsletter signup">
+        <input type="email" placeholder="you@email.com" aria-label="Email for newsletter">
+        <button type="button">Join</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© {{ "now"|date("Y") }} Comms — Where talent meets opportunity.</span>
+    <span>Human-made art · Verified artists · Built with Symfony</span>
+  </div>
+</footer>

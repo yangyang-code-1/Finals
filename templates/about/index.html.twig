@@ -1,0 +1,166 @@
+{% extends 'public/layout.html.twig' %}
+
+{% block title %}About Comms — Our story & team{% endblock %}
+
+{% block body %}
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="lead" style="margin-bottom:0.5rem;font-size:0.95rem;letter-spacing:0.12em;text-transform:uppercase;opacity:0.92;">
+        The people behind the marketplace
+      </p>
+      <h1>About <span>Comms</span></h1>
+      <p class="lead">A creative marketplace built to connect artists with clients through transparent commissions, secure collaboration, and a supportive community.</p>
+      <p class="sub">We took inspiration from platforms like VGen — scroll-first discovery, open listings, and a love letter to human-made art.</p>
+    </div>
+  </section>
+
+  <div class="page-section">
+    <div class="stats-strip reveal">
+      <div class="stat-card"><strong>2024</strong><span>Founded for our capstone</span></div>
+      <div class="stat-card"><strong>4</strong><span>Core team members</span></div>
+      <div class="stat-card"><strong>12+</strong><span>Commission categories</span></div>
+      <div class="stat-card"><strong>∞</strong><span>Creativity encouraged</span></div>
+    </div>
+  </div>
+
+  <section class="section-block">
+    <div class="page-section reveal">
+      <div class="split">
+        <div class="story-card">
+          <div class="kicker"><i class="bi bi-bullseye"></i> Our mission</div>
+          <h3>Make commissions feel exciting again</h3>
+          <p>Clients should feel the same rush scrolling Comms that they get browsing VGen — discovering artists, comparing styles, and imagining their next piece before they ever hit “send.”</p>
+        </div>
+        <div class="story-card">
+          <div class="kicker"><i class="bi bi-eye"></i> Our vision</div>
+          <h3>Trust + taste, in one place</h3>
+          <p>Verified workflows for staff, beautiful public pages for customers, and APIs ready for mobile — one ecosystem where every role sees what they need.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" style="padding-top:0;background:linear-gradient(180deg, rgba(124,58,237,0.04), transparent);">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-gem"></i> What we believe</div>
+        <h2>Values that guide every feature</h2>
+      </div>
+      <div class="pillars">
+        <article class="pillar-card">
+          <div class="pillar-icon"><i class="bi bi-hand-thumbs-up"></i></div>
+          <h3>Artists first</h3>
+          <p>Listings, previews, and fair visibility — creators deserve a storefront as polished as their portfolio.</p>
+        </article>
+        <article class="pillar-card">
+          <div class="pillar-icon"><i class="bi bi-shield-lock"></i></div>
+          <h3>Privacy matters</h3>
+          <p>Verification without oversharing. Sensitive details stay between client, artist, and staff who need them.</p>
+        </article>
+        <article class="pillar-card">
+          <div class="pillar-icon"><i class="bi bi-emoji-smile"></i></div>
+          <h3>Joy in the scroll</h3>
+          <p>Long, beautiful pages aren’t fluff — they’re how customers fall in love with your platform before they register.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-signpost-split"></i> Timeline</div>
+        <h2>How Comms came to life</h2>
+      </div>
+      <div class="steps">
+        <div class="step-card"><div class="step-num">Q1</div><h3>Ideation</h3><p>Studied VGen, Fiverr, and artist Discords to map what “good” feels like for commission marketplaces.</p></div>
+        <div class="step-card"><div class="step-num">Q2</div><h3>Web foundation</h3><p>Symfony admin, staff tools, customer browse, and email verification — the backbone of trust.</p></div>
+        <div class="step-card"><div class="step-num">Q3</div><h3>API layer</h3><p>JWT, registration, and mobile-ready JSON so the same data powers web and app.</p></div>
+        <div class="step-card"><div class="step-num">Now</div><h3>Polish &amp; launch</h3><p>Long-form landing pages, footers, and demo-ready storytelling for final presentation.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" style="padding-top:0;" id="team">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-people-fill"></i> Meet the team</div>
+        <h2>The humans building Comms</h2>
+        <p>Small team, big dreams — each of us owns a slice of the experience you see when you scroll.</p>
+      </div>
+      <div class="team-grid">
+        <article class="team-card">
+          <div class="team-ava"><img src="{{ asset('team_images/member1.jpg') }}" alt="Sophia Agura"></div>
+          <div class="team-name">Sophia Agura</div>
+          <div class="team-role">Head of Community</div>
+          <p class="team-bio">Keeps artists and clients heard — from Discord vibes to support replies that actually feel human.</p>
+        </article>
+        <article class="team-card">
+          <div class="team-ava"><img src="{{ asset('team_images/member2.jpg') }}" alt="Sophisdom"></div>
+          <div class="team-name">Sophisdom</div>
+          <div class="team-role">UI/UX Designer</div>
+          <p class="team-bio">Crafted the purple gradients, card hovers, and VGen-inspired flows you can’t stop scrolling.</p>
+        </article>
+        <article class="team-card">
+          <div class="team-ava"><img src="{{ asset('team_images/member3.jpg') }}" alt="Sophie"></div>
+          <div class="team-name">Sophie</div>
+          <div class="team-role">Commission Coordinator</div>
+          <p class="team-bio">Makes sure listings stay accurate, on-brand, and exciting from browse page to delivery.</p>
+        </article>
+        <article class="team-card">
+          <div class="team-ava"><img src="{{ asset('team_images/member4.jpg') }}" alt="Sof"></div>
+          <div class="team-name">Sof</div>
+          <div class="team-role">Backend Engineer</div>
+          <p class="team-bio">Symfony, Doctrine, JWT, and the APIs that keep web and mobile speaking the same language.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" style="background:linear-gradient(180deg, transparent, rgba(124,58,237,0.05));">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-lightning-charge-fill"></i> Spotlight</div>
+        <h2>See what’s open right now</h2>
+        <p>A taste of the commissions waiting on our browse page.</p>
+      </div>
+      {% include 'public/_featured_commissions.html.twig' %}
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-question-circle"></i> FAQ</div>
+        <h2>Common questions about Comms</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button type="button" class="faq-q">Is Comms only for digital art? <i class="bi bi-chevron-down"></i></button>
+          <div class="faq-a">We focus on digital commissions — illustration, VTuber assets, emotes, and more — but our category system can grow with your community.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">How is this different from VGen? <i class="bi bi-chevron-down"></i></button>
+          <div class="faq-a">We mirror the scroll-friendly discovery VGen popularized, while tying into our own Symfony admin, staff roles, and student-built API for mobile.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">Can I list commissions as an artist? <i class="bi bi-chevron-down"></i></button>
+          <div class="faq-a">Staff-managed listings power the browse page today. Reach out via Contact if you want to partner on featured slots for demo or launch.</div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-q">Do I need an account to browse? <i class="bi bi-chevron-down"></i></button>
+          <div class="faq-a">No — scroll home, about, and commissions freely. Register when you’re ready to save progress and connect with the team.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" style="padding-bottom:5rem;">
+    <div class="cta-band reveal">
+      <h2>Want to work with us?</h2>
+      <p>Whether you’re a client, artist, or curious professor grading our midterm — we’d love to hear from you.</p>
+      <a href="{{ path('app_contact') }}" class="btn-hero">Get in touch</a>
+      <a href="{{ path('app_commissions_browse') }}" class="btn-hero ghost">Browse commissions</a>
+    </div>
+  </section>
+{% endblock %}

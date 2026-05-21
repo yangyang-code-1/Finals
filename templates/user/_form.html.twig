@@ -1,0 +1,127 @@
+<style>
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #fff;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+  }
+
+  .form-control:hover {
+    border-color: #cbd5e1;
+  }
+
+  select.form-control {
+    cursor: pointer;
+  }
+
+  .form-help {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 0.3rem;
+  }
+
+  .required-asterisk {
+    color: #ef4444;
+    margin-left: 0.2rem;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+    padding: 0.9rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+  }
+
+  .btn-submit i {
+    font-size: 1.1rem;
+  }
+
+  .form-errors {
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+  }
+</style>
+
+{{ form_start(form) }}
+  <div class="form-group">
+    {{ form_label(form.name, 'Full Name', {'label_attr': {'class': 'form-label'}}) }}
+    <span class="required-asterisk">*</span>
+    {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter full name'}}) }}
+    {{ form_errors(form.name) }}
+  </div>
+
+  <div class="form-group">
+    {{ form_label(form.email, 'Email Address', {'label_attr': {'class': 'form-label'}}) }}
+    <span class="required-asterisk">*</span>
+    {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'user@example.com', 'type': 'email'}}) }}
+    {{ form_errors(form.email) }}
+  </div>
+
+  <div class="form-group">
+    {{ form_label(form.password, 'Password', {'label_attr': {'class': 'form-label'}}) }}
+    {% if not form.vars.data.id %}
+      <span class="required-asterisk">*</span>
+    {% endif %}
+    {{ form_widget(form.password, {'attr': {'class': 'form-control', 'placeholder': 'Enter password'}}) }}
+    {{ form_errors(form.password) }}
+    {% if form.vars.data.id %}
+      <div class="form-help">Leave blank to keep current password</div>
+    {% else %}
+      <div class="form-help">Minimum 6 characters</div>
+    {% endif %}
+  </div>
+
+  <div class="form-group">
+    {{ form_label(form.role, 'Role', {'label_attr': {'class': 'form-label'}}) }}
+    <span class="required-asterisk">*</span>
+    {{ form_widget(form.role, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.role) }}
+    <div class="form-help">Select the user's role in the system</div>
+  </div>
+
+  <div class="form-group">
+    {{ form_label(form.createdAt, 'Created At', {'label_attr': {'class': 'form-label'}}) }}
+    {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.createdAt) }}
+    <div class="form-help">Leave empty to use current date/time</div>
+  </div>
+
+  <button type="submit" class="btn-submit">
+    <i class="bi bi-check-circle"></i> {{ button_label|default('Create User') }}
+  </button>
+{{ form_end(form) }}

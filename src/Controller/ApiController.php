@@ -1,0 +1,250 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\User;
+use App\Repository\CategoryRepository;
+use App\Repository\CommissionRepository;
+use App\Repository\UserRepository;
+use App\Service\EmailVerificationService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+#[Route('/api')]
+class ApiController extends AbstractController
+{
+    /**
+     * Standard envelope for mobile-friendly JSON (criterion 8).
+     *
+     * @param array<string, mixed> $data
+     */
+    private function jsonOk(array $data = [], ?string $message = null, int $status = Response::HTTP_OK): JsonResponse
+    {
+        $payload = ['success' => true, 'data' => $data];
+        if ($message !== null) {
+            $payload['message'] = $message;
+        }
+
+        return new JsonResponse($payload, $status);
+    }
+
+    /**
+     * @param array<string, list<string>> $errors
+     */
+    private function jsonError(array $errors, int $status = Response::HTTP_BAD_REQUEST): JsonResponse
+    {
+        return new JsonResponse([
+            'success' => false,
+            'errors' => $errors,
+        ], $status);
+    }
+
+    /**
+     * Mobile API Endpoint 1: List Categories
+     */
+    #[Route('/categories', name: 'api_categories', methods: ['GET'])]
+    public function getCategories(CategoryRepository $repository): JsonResponse
+    {
+        $categories = $repository->findAll();
+        $data = array_map(fn ($c) => [
+            'id' => $c->getId(),
+            'name' => $c->getName(),
+        ], $categories);
+
+        return $this->jsonOk(['categories' => $data]);
+    }
+
+    /**
+     * Mobile API Endpoint 2: List Commissions
+     */
+    #[Route('/commissions', name: 'api_commissions', methods: ['GET'])]
+    public function getCommissions(CommissionRepository $repository): JsonResponse
+    {
+        $commissions = $repository->findForBrowse();
+        $user = $this->getUser();
+        $userId = $user instanceof User ? $user->getId() : null;
+        $data = array_map(function ($c) use ($userId) {
+            $category = $c->getCategory();
+            $artist = $c->getArtist();
+            $client = $c->getClient();
+
+            return [
+                'id' => $c->getId(),
+                'title' => $c->getTitle(),
+                'description' => $c->getDescription(),
+                'price' => $c->getPrice(),
+                'status' => $c->getStatus(),
+                'categoryName' => $category?->getName(),
+                'artistName' => $artist?->getName() ?? 'Artist',
+                'isAvailable' => $client === null,
+                'isMine' => $client !== null && $client->getId() === $userId,
+            ];
+        }, $commissions);
+
+        return $this->jsonOk(['commissions' => $data]);
+    }
+
+    /**
+     * Mobile API Endpoint 3: Check API Status
+     */
+    #[Route('/status', name: 'api_status', methods: ['GET'])]
+    public function getStatus(): JsonResponse
+    {
+        return $this->jsonOk([
+            'status' => 'online',
+            'version' => '1.0.0',
+        ]);
+    }
+
+    /**
+     * Mobile API: current authenticated customer profile.
+     */
+    #[Route('/me', name: 'api_me', methods: ['GET'])]
+    public function getMe(): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->jsonError(['auth' => ['Not authenticated.']], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return $this->jsonOk([
+            'user' => [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'email' => $user->getEmail(),
+            ],
+        ]);
+    }
+
+    /**
+     * Mobile API: single commission detail.
+     */
+    #[Route('/commissions/{id}', name: 'api_commission_detail', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function getCommission(int $id, CommissionRepository $repository): JsonResponse
+    {
+        $commission = $repository->find($id);
+        if ($commission === null) {
+            return $this->jsonError(['commission' => ['Commission not found.']], Response::HTTP_NOT_FOUND);
+        }
+
+        $category = $commission->getCategory();
+
+        return $this->jsonOk([
+            'commission' => [
+                'id' => $commission->getId(),
+                'title' => $commission->getTitle(),
+                'description' => $commission->getDescription(),
+                'price' => $commission->getPrice(),
+                'status' => $commission->getStatus(),
+                'categoryName' => $category?->getName(),
+            ],
+        ]);
+    }
+
+    /**
+     * API registration — same verification flow as the web form (criterion 7).
+     *
+     * POST JSON body:
+     * {
+     *   "name": "Ada Lovelace",
+     *   "email": "ada@example.com",
+     *   "password": "minimum-6-chars",
+     *   "agreeTerms": true
+     * }
+     */
+    #[Route('/register', name: 'api_register', methods: ['POST'])]
+    public function register(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $userPasswordHasher,
+        UserRepository $userRepository,
+        EmailVerificationService $emailVerificationService,
+        UrlGeneratorInterface $urlGenerator,
+        ValidatorInterface $validator,
+    ): JsonResponse {
+        $payload = json_decode($request->getContent(), true);
+        if (!\is_array($payload)) {
+            return $this->jsonError(['body' => ['Invalid or empty JSON body.']], Response::HTTP_BAD_REQUEST);
+        }
+
+        $name = trim((string) ($payload['name'] ?? ''));
+        $email = trim((string) ($payload['email'] ?? ''));
+        $plainPassword = (string) ($payload['password'] ?? '');
+        $agreeTerms = filter_var($payload['agreeTerms'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+        $errors = [];
+
+        if ($name === '') {
+            $errors['name'][] = 'Please enter your name.';
+        }
+        if ($email === '') {
+            $errors['email'][] = 'Please enter your email.';
+        }
+        if (strlen($plainPassword) < 6) {
+            $errors['password'][] = 'Password must be at least 6 characters.';
+        }
+        if (!$agreeTerms) {
+            $errors['agreeTerms'][] = 'You must agree to the terms.';
+        }
+
+        if ($errors !== []) {
+            return $this->jsonError($errors, Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($userRepository->findOneBy(['email' => $email])) {
+            return $this->jsonError(['email' => ['There is already an account with this email.']], Response::HTTP_CONFLICT);
+        }
+
+        $user = new User();
+        $user->setName($name);
+        $user->setEmail($email);
+        $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+
+        $token = $emailVerificationService->generateVerificationToken();
+        $user->setVerificationToken($token);
+        $user->setIsVerified(false);
+        $user->setRole('ROLE_USER');
+        $user->setCreatedAt(new \DateTimeImmutable());
+
+        $violations = $validator->validate($user);
+        if (\count($violations) > 0) {
+            foreach ($violations as $v) {
+                $path = $v->getPropertyPath() ?: '_global';
+                $errors[$path][] = $v->getMessage();
+            }
+
+            return $this->jsonError($errors, Response::HTTP_BAD_REQUEST);
+        }
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $verificationUrl = $urlGenerator->generate(
+            'app_verify_email',
+            ['token' => $token],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        $emailVerificationService->sendVerificationEmail($user, $verificationUrl);
+
+        return $this->jsonOk(
+            [
+                'user' => [
+                    'email' => $user->getEmail(),
+                    'verified' => $user->isVerified() ?? false,
+                ],
+                'verify' => [
+                    'hint' => 'Use the link sent to your email (same as web registration).',
+                ],
+            ],
+            'Registration successful. Check your email to verify your account.',
+            Response::HTTP_CREATED
+        );
+    }
+}

@@ -1,0 +1,248 @@
+{% extends 'base_auth.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .register-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        max-width: 450px;
+        width: 100%;
+    }
+
+    .register-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px;
+        text-align: center;
+        color: white;
+    }
+
+    .logo {
+        width: 120px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        padding: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+    }
+
+    .register-header h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .register-header p {
+        margin: 10px 0 0;
+        opacity: 0.95;
+        font-size: 15px;
+        font-weight: 400;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .register-body {
+        padding: 40px;
+    }
+
+    .form-errors {
+        background: #fee;
+        border: 1px solid #fcc;
+        color: #c33;
+        padding: 12px 16px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    .form-errors ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #374151;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-check {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 24px;
+    }
+
+    .form-check input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 10px;
+        margin-top: 2px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .form-check label {
+        color: #6b7280;
+        font-size: 14px;
+        cursor: pointer;
+        line-height: 1.5;
+    }
+
+    .form-check a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .form-check a:hover {
+        text-decoration: underline;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .login-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+    /* Override Symfony form styling */
+    form > div {
+        margin-bottom: 0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="register-container">
+    <div class="register-header">
+        <div class="logo">
+            <img src="/Primary Logo.png" alt="ArtComms Logo" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <h1>Create Account</h1>
+        <p>Join COMMS today</p>
+    </div>
+
+    <div class="register-body">
+        {% if form_errors(registrationForm) %}
+            <div class="form-errors">
+                {{ form_errors(registrationForm) }}
+            </div>
+        {% endif %}
+
+        {{ form_start(registrationForm) }}
+            <div class="form-group">
+                {{ form_label(registrationForm.name, 'Full Name') }}
+                {{ form_widget(registrationForm.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter your full name'}}) }}
+                {{ form_errors(registrationForm.name) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(registrationForm.email, 'Email Address') }}
+                {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Enter your email'}}) }}
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(registrationForm.plainPassword, 'Password') }}
+                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Create a password'}}) }}
+                {{ form_errors(registrationForm.plainPassword) }}
+            </div>
+
+            <div class="form-check">
+                {{ form_widget(registrationForm.agreeTerms) }}
+                {{ form_label(registrationForm.agreeTerms, 'I agree to the Terms of Service and Privacy Policy'|raw) }}
+                {{ form_errors(registrationForm.agreeTerms) }}
+            </div>
+
+            <button type="submit" class="btn-primary">Create Account</button>
+        {{ form_end(registrationForm) }}
+
+        <div class="login-link">
+            Already have an account? <a href="{{ path('app_login') }}">Sign in</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
