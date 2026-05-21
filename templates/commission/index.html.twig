@@ -1,0 +1,253 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Commission Management{% endblock %}
+{% block header %}Commissions{% endblock %}
+
+{% block body %}
+<style>
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .add-commission-btn {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+  }
+
+  .add-commission-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+    color: white;
+  }
+
+  .table-container {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    overflow: hidden;
+    border: 1px solid rgba(139, 92, 246, 0.1);
+  }
+
+  .table thead {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+  }
+
+  .table thead th {
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+  }
+
+  .table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f8f9ff;
+    transform: scale(1.01);
+  }
+
+  .table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    color: #475569;
+  }
+
+  .status-badge {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .status-badge.completed {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .status-badge.in-progress {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .status-badge.cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .price-tag {
+    font-weight: 700;
+    color: #7c3aed;
+    font-size: 1.05rem;
+  }
+
+  .user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: #f1f5f9;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: #475569;
+  }
+
+  .user-badge i {
+    color: #7c3aed;
+  }
+
+  .category-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: linear-gradient(135deg, #7c3aed20, #a855f740);
+    color: #7c3aed;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+</style>
+
+<div class="section-header">
+  <h3 class="section-title" style="position: relative; display: inline-block; font-size: 1.5rem; font-weight: 700; color: #370d46ff; margin: 0; padding-bottom: 0.5rem;">
+    <i class="bi bi-palette me-2"></i>Commission List
+    <span style="position: absolute; bottom: 0; left: 0; width: 60px; height: 3px; background: linear-gradient(90deg, #7c3aed, #a855f7); border-radius: 2px;"></span>
+  </h3>
+  
+  <div class="d-flex flex-wrap gap-2 justify-content-end">
+    <a href="{{ path('app_commission_requests') }}" class="add-commission-btn" style="background:linear-gradient(135deg,#4b0082,#7c3aed);">
+      <i class="bi bi-bag-heart-fill"></i> Slot Requests
+      {% if pending_request_count is defined and pending_request_count > 0 %}
+        <span class="badge bg-warning text-dark ms-1">{{ pending_request_count }}</span>
+      {% endif %}
+    </a>
+    <a href="{{ path('app_commission_new') }}" class="add-commission-btn">
+      <i class="bi bi-plus-circle"></i> Create New Commission
+    </a>
+  </div>
+</div>
+
+<div class="table-container">
+  <table id="commissionTable" class="table table-hover mb-0 data-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Artist</th>
+        <th>Client</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th>Created At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for commission in commissions %}
+        <tr>
+          <td><strong>#{{ commission.id }}</strong></td>
+          <td>
+            <i class="bi bi-brush me-2" style="color: #7c3aed;"></i>
+            {{ commission.title }}
+          </td>
+          <td>
+            <span class="category-badge">
+              <i class="bi bi-folder2 me-1"></i>
+              {{ commission.category ? commission.category.name : 'Uncategorized' }}
+            </span>
+          </td>
+          <td>
+            {% if commission.artist %}
+              <span class="user-badge">
+                <i class="bi bi-person-badge"></i>
+                {{ commission.artist.name }}
+              </span>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if commission.client %}
+              <span class="user-badge">
+                <i class="bi bi-person"></i>
+                {{ commission.client.name }}
+              </span>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+          <td><span class="price-tag">₱{{ commission.price|number_format(2, '.', ',') }}</span></td>
+          <td>
+            <span class="status-badge {{ commission.status|lower|replace({' ': '-'}) }}">
+              {{ commission.status }}
+            </span>
+          </td>
+          <td>{{ commission.createdAt ? commission.createdAt|date('Y-m-d') : '—' }}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <a href="{{ path('app_commission_show', {'id': commission.id}) }}" 
+                 class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-eye"></i>
+              </a>
+              <a href="{{ path('app_commission_edit', {'id': commission.id}) }}" 
+                 class="btn btn-sm btn-outline-warning">
+                <i class="bi bi-pencil"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="9" class="text-center py-4">
+            <div class="text-muted">
+              <i class="bi bi-inbox" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+              No commissions found. <a href="{{ path('app_commission_new') }}">Create your first commission</a>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  $(document).ready(function() {
+    if (document.getElementById('commissionTable')) {
+      $('#commissionTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [[0, 'desc']],
+        language: {
+          search: "🔍 Search:",
+          lengthMenu: "_MENU_ per page",
+          info: "Showing _START_ to _END_ of _TOTAL_ commissions",
+          zeroRecords: "No matching records found",
+          paginate: { next: "›", previous: "‹" }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

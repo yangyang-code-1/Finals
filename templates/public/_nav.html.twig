@@ -1,0 +1,110 @@
+{% set currentRoute = app.request.attributes.get('_route') %}
+{% set isStaff = is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+{% set solidNavRoutes = ['app_account', 'app_account_progress'] %}
+
+<header class="site-header">
+  <nav class="navbar site-navbar {{ currentRoute in solidNavRoutes ? 'solid' : '' }}" id="navbar" aria-label="Main navigation">
+    <a class="brand-link" href="{{ path('app_home') }}#home" aria-label="Comms home">
+      <img class="brand-logo" src="{{ asset('Primary Logo.png') }}" alt="Comms logo">
+    </a>
+
+    <button
+      type="button"
+      class="nav-toggle"
+      id="nav-toggle"
+      aria-label="Open navigation menu"
+      aria-controls="landing-menu"
+      aria-expanded="false"
+      onclick="toggleMobileNav(event)"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="landing-nav" id="landing-menu" aria-label="Landing page navigation">
+      <a href="{{ path('app_home') }}#home" class="landing-link {{ currentRoute == 'app_home' ? 'active' : '' }}">
+        <i class="bi bi-house-heart-fill"></i> Home
+      </a>
+      <a href="{{ path('app_commissions_browse') }}" class="landing-link {{ currentRoute == 'app_commissions_browse' ? 'active' : '' }}">
+        <i class="bi bi-palette-fill"></i> Browse
+      </a>
+      <a href="{{ path('app_home') }}#how-it-works" class="landing-link">
+        <i class="bi bi-signpost-split-fill"></i> How it works
+      </a>
+      <a href="{{ path('app_about') }}" class="landing-link {{ currentRoute == 'app_about' ? 'active' : '' }}">
+        <i class="bi bi-people-fill"></i> About
+      </a>
+      <a href="{{ path('app_contact') }}" class="landing-link {{ currentRoute == 'app_contact' ? 'active' : '' }}">
+        <i class="bi bi-envelope-at-fill"></i> Contact
+      </a>
+      {% if app.user %}
+        <a href="{{ path('app_account_progress') }}" class="landing-link {{ currentRoute == 'app_account_progress' ? 'active' : '' }}">
+          <i class="bi bi-clock-history"></i> My progress
+        </a>
+      {% endif %}
+
+      <div class="mobile-nav-actions">
+        {% if app.user %}
+          <a href="{{ path('app_account') }}" class="nav-pill"><i class="bi bi-person-circle"></i> Account</a>
+          {% if isStaff %}
+            <a href="{{ path('app_commission_index') }}" class="nav-pill"><i class="bi bi-kanban-fill"></i> Staff dashboard</a>
+          {% endif %}
+          <a href="{{ path('app_logout') }}" class="nav-cta muted"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        {% else %}
+          <a href="{{ path('app_login') }}" class="nav-pill"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+          <a href="{{ path('app_register') }}" class="nav-cta"><i class="bi bi-person-plus-fill"></i> Register</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      {% if app.user %}
+        <a href="{{ path('app_account_progress') }}" class="nav-pill nav-secondary">
+          <i class="bi bi-clock-history"></i> My progress
+        </a>
+        {% if isStaff %}
+          <a href="{{ path('app_commission_index') }}" class="nav-pill nav-secondary">
+            <i class="bi bi-kanban-fill"></i> Dashboard
+          </a>
+        {% endif %}
+      {% else %}
+        <a href="{{ path('app_login') }}" class="nav-pill nav-login">Login</a>
+        <a href="{{ path('app_register') }}" class="nav-cta">Register</a>
+      {% endif %}
+
+      <div class="dropdown account-dropdown">
+        <button
+          type="button"
+          class="avatar"
+          id="account-toggle"
+          onclick="toggleDropdown(event)"
+          aria-label="Account menu"
+          aria-controls="avatar-dropdown"
+          aria-expanded="false"
+        >
+          <img src="{{ asset('PROFILE.png') }}" alt="">
+        </button>
+        <ul id="avatar-dropdown" class="dropdown-content" aria-label="Account shortcuts">
+          <li><a href="{{ path('app_account') }}"><i class="bi bi-person-circle"></i> Account</a></li>
+          {% if app.user %}
+            <li><a href="{{ path('app_account_progress') }}"><i class="bi bi-clock-history"></i> My progress timeline</a></li>
+          {% endif %}
+          <li><a href="{{ path('app_commissions_browse') }}"><i class="bi bi-palette"></i> Browse commissions</a></li>
+          {% if isStaff %}
+            <li><a href="{{ path('app_commission_index') }}"><i class="bi bi-kanban"></i> Manage commissions</a></li>
+          {% endif %}
+          {% if is_granted('ROLE_ADMIN') %}
+            <li><a href="{{ path('app_admin_dashboard') }}"><i class="bi bi-speedometer2"></i> Admin dashboard</a></li>
+          {% endif %}
+          {% if app.user %}
+            <li><a href="{{ path('app_logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+          {% else %}
+            <li><a href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
+            <li><a href="{{ path('app_register') }}"><i class="bi bi-person-plus"></i> Register</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

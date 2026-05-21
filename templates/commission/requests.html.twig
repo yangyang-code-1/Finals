@@ -1,0 +1,251 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Commission Requests{% endblock %}
+{% block header %}Slot Requests{% endblock %}
+
+{% block body %}
+<style>
+  .requests-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.4rem;
+    margin-bottom: 1.25rem;
+    border-radius: 24px;
+    color: #fff;
+    background:
+      radial-gradient(circle at 90% 15%, rgba(255,255,255,0.28), transparent 24%),
+      linear-gradient(135deg, #4b0082, #7c3aed 58%, #c084fc);
+    box-shadow: 0 22px 55px rgba(42, 18, 75, 0.16);
+  }
+
+  .requests-hero h2 {
+    margin: 0;
+    font-size: clamp(1.65rem, 4vw, 2.6rem);
+    font-weight: 950;
+    letter-spacing: -0.04em;
+  }
+
+  .requests-hero p {
+    margin: 0.5rem 0 0;
+    color: rgba(255,255,255,0.86);
+    font-weight: 700;
+    line-height: 1.65;
+  }
+
+  .request-count {
+    width: 112px;
+    height: 112px;
+    border-radius: 30px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.24);
+  }
+
+  .request-count strong {
+    display: block;
+    font-size: 2.4rem;
+    line-height: 1;
+  }
+
+  .request-count span {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .request-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .request-card {
+    background: #fff;
+    border: 1px solid rgba(124, 58, 237, 0.12);
+    border-radius: 24px;
+    padding: 1.15rem;
+    box-shadow: 0 18px 50px rgba(42, 18, 75, 0.08);
+  }
+
+  .request-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .request-card h3 {
+    margin: 0;
+    color: #2a124b;
+    font-size: 1.15rem;
+    font-weight: 950;
+  }
+
+  .request-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.38rem 0.7rem;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 0.78rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .request-meta {
+    display: grid;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 16px;
+    background: #fbf9ff;
+    color: #6b5f80;
+    font-weight: 750;
+  }
+
+  .meta-row strong {
+    color: #2a124b;
+    text-align: right;
+  }
+
+  .request-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .accept-btn,
+  .soft-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    padding: 0.68rem 0.95rem;
+    font-weight: 900;
+    text-decoration: none;
+    border: 0;
+  }
+
+  .accept-btn {
+    color: #fff;
+    background: linear-gradient(135deg, #7c3aed, #c084fc);
+    box-shadow: 0 12px 28px rgba(124, 58, 237, 0.22);
+  }
+
+  .soft-btn {
+    color: #4b0082;
+    background: #f3e8ff;
+  }
+
+  .empty-requests {
+    padding: 2rem;
+    text-align: center;
+    border-radius: 24px;
+    background: #fff;
+    border: 1px dashed rgba(124, 58, 237, 0.25);
+    box-shadow: 0 18px 50px rgba(42, 18, 75, 0.06);
+  }
+
+  @media (max-width: 760px) {
+    .requests-hero { grid-template-columns: 1fr; }
+    .request-count { width: 100%; height: auto; padding: 1rem; }
+  }
+</style>
+
+<section class="requests-hero">
+  <div>
+    <div class="dashboard-eyebrow" style="background:rgba(255,255,255,0.16);border-color:rgba(255,255,255,0.2);color:#fff;">
+      <i class="bi bi-bag-heart-fill"></i> Client requests
+    </div>
+    <h2>Requested commission slots</h2>
+    <p>When a client clicks Request slot on the public browse page, it lands here. Accepting moves the client timeline from Pending to In Progress.</p>
+  </div>
+  <div class="request-count">
+    <div>
+      <strong>{{ requests|length }}</strong>
+      <span>Pending</span>
+    </div>
+  </div>
+</section>
+
+{% for label, messages in app.flashes %}
+  {% for message in messages %}
+    <div class="alert alert-{{ label == 'danger' ? 'danger' : (label == 'success' ? 'success' : 'info') }} rounded-4 fw-bold">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endfor %}
+
+{% if requests|length == 0 %}
+  <div class="empty-requests">
+    <i class="bi bi-inbox" style="font-size:2.7rem;color:#7c3aed;"></i>
+    <h3 class="mt-3" style="font-weight:950;color:#2a124b;">No pending slot requests</h3>
+    <p class="mb-0 text-muted fw-semibold">New client requests will appear here after they choose Request slot on a public commission listing.</p>
+  </div>
+{% else %}
+  <div class="request-grid">
+    {% for request in requests %}
+      <article class="request-card">
+        <div class="request-top">
+          <div>
+            <h3>{{ request.title }}</h3>
+            <div class="text-muted fw-semibold mt-1">#{{ request.id }} · {{ request.category ? request.category.name : 'General' }}</div>
+          </div>
+          <span class="request-pill"><i class="bi bi-hourglass-split"></i> Pending</span>
+        </div>
+
+        <div class="request-meta">
+          <div class="meta-row">
+            <span><i class="bi bi-person-heart me-1"></i> Client</span>
+            <strong>{{ request.client ? request.client.name : 'Unknown' }}</strong>
+          </div>
+          <div class="meta-row">
+            <span><i class="bi bi-envelope me-1"></i> Email</span>
+            <strong>{{ request.client ? request.client.email : '—' }}</strong>
+          </div>
+          <div class="meta-row">
+            <span><i class="bi bi-person-badge me-1"></i> Artist</span>
+            <strong>{{ request.artist ? request.artist.name : 'Unassigned' }}</strong>
+          </div>
+          <div class="meta-row">
+            <span><i class="bi bi-cash-coin me-1"></i> Price</span>
+            <strong>₱{{ request.price|number_format(2, '.', ',') }}</strong>
+          </div>
+        </div>
+
+        <div class="request-actions">
+          <form method="post" action="{{ path('app_commission_accept_request', {'id': request.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('accept_commission' ~ request.id) }}">
+            <button type="submit" class="accept-btn">
+              <i class="bi bi-check2-circle"></i> Accept slot
+            </button>
+          </form>
+          <a href="{{ path('app_commission_show', {'id': request.id}) }}" class="soft-btn">
+            <i class="bi bi-eye"></i> View details
+          </a>
+          <a href="{{ path('app_commission_edit', {'id': request.id}) }}" class="soft-btn">
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

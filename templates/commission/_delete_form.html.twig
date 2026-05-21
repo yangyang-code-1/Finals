@@ -1,0 +1,26 @@
+<style>
+.btn-delete {
+    background-color: #e3342f;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background-color 0.3s;
+    margin-right: 6px;
+
+
+}
+
+.btn-delete:hover {
+    background-color: #cc1f1a;
+}
+</style>
+<td class="actions">
+    <form method="post" action="{{ path('app_commission_delete', {'id': commission.id}) }}"
+          onsubmit="return confirm('Are you sure you want to delete this item?');"
+          style="display:inline;">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commission.id) }}">
+        <button class="btn-delete">DELETE</button>
+    </form>
+</td>

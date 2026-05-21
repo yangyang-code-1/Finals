@@ -1,0 +1,246 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Active Commissions{% endblock %}
+{% block header %}Active Work{% endblock %}
+
+{% block body %}
+<style>
+  .active-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.4rem;
+    margin-bottom: 1.25rem;
+    border-radius: 24px;
+    color: #fff;
+    background:
+      radial-gradient(circle at 90% 15%, rgba(255,255,255,0.28), transparent 24%),
+      linear-gradient(135deg, #2a124b, #7c3aed 60%, #c084fc);
+    box-shadow: 0 22px 55px rgba(42, 18, 75, 0.16);
+  }
+
+  .active-hero h2 {
+    margin: 0;
+    font-size: clamp(1.65rem, 4vw, 2.6rem);
+    font-weight: 950;
+    letter-spacing: -0.04em;
+  }
+
+  .active-hero p {
+    margin: 0.5rem 0 0;
+    color: rgba(255,255,255,0.86);
+    font-weight: 700;
+    line-height: 1.65;
+  }
+
+  .active-count {
+    width: 112px;
+    height: 112px;
+    border-radius: 30px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.24);
+  }
+
+  .active-count strong {
+    display: block;
+    font-size: 2.4rem;
+    line-height: 1;
+  }
+
+  .active-count span {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 1rem;
+  }
+
+  .work-card {
+    background: #fff;
+    border: 1px solid rgba(124, 58, 237, 0.12);
+    border-radius: 24px;
+    padding: 1.15rem;
+    box-shadow: 0 18px 50px rgba(42, 18, 75, 0.08);
+  }
+
+  .work-card h3 {
+    margin: 0;
+    color: #2a124b;
+    font-size: 1.15rem;
+    font-weight: 950;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.38rem 0.7rem;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1e40af;
+    font-size: 0.78rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .work-meta {
+    display: grid;
+    gap: 0.65rem;
+    margin: 1rem 0;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 16px;
+    background: #fbf9ff;
+    color: #6b5f80;
+    font-weight: 750;
+  }
+
+  .meta-row strong {
+    color: #2a124b;
+    text-align: right;
+  }
+
+  .work-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .complete-btn,
+  .soft-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    padding: 0.68rem 0.95rem;
+    font-weight: 900;
+    text-decoration: none;
+    border: 0;
+  }
+
+  .complete-btn {
+    color: #fff;
+    background: linear-gradient(135deg, #10b981, #34d399);
+    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22);
+  }
+
+  .soft-btn {
+    color: #4b0082;
+    background: #f3e8ff;
+  }
+
+  .empty-work {
+    padding: 2rem;
+    text-align: center;
+    border-radius: 24px;
+    background: #fff;
+    border: 1px dashed rgba(124, 58, 237, 0.25);
+    box-shadow: 0 18px 50px rgba(42, 18, 75, 0.06);
+  }
+
+  @media (max-width: 760px) {
+    .active-hero { grid-template-columns: 1fr; }
+    .active-count { width: 100%; height: auto; padding: 1rem; }
+  }
+</style>
+
+<section class="active-hero">
+  <div>
+    <div class="dashboard-eyebrow" style="background:rgba(255,255,255,0.16);border-color:rgba(255,255,255,0.2);color:#fff;">
+      <i class="bi bi-brush-fill"></i> Accepted client work
+    </div>
+    <h2>Active commissions</h2>
+    <p>These are requested slots that you already accepted. Mark one completed when the artist is done so the client’s My Progress timeline updates to Completed.</p>
+  </div>
+  <div class="active-count">
+    <div>
+      <strong>{{ active_commissions|length }}</strong>
+      <span>In progress</span>
+    </div>
+  </div>
+</section>
+
+{% for label, messages in app.flashes %}
+  {% for message in messages %}
+    <div class="alert alert-{{ label == 'danger' ? 'danger' : (label == 'success' ? 'success' : 'info') }} rounded-4 fw-bold">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endfor %}
+
+{% if active_commissions|length == 0 %}
+  <div class="empty-work">
+    <i class="bi bi-brush" style="font-size:2.7rem;color:#7c3aed;"></i>
+    <h3 class="mt-3" style="font-weight:950;color:#2a124b;">No active commissions yet</h3>
+    <p class="mb-3 text-muted fw-semibold">Accept a pending slot request first. It will move here as In Progress.</p>
+    <a href="{{ path('app_commission_requests') }}" class="soft-btn">
+      <i class="bi bi-bag-heart"></i> Go to slot requests
+    </a>
+  </div>
+{% else %}
+  <div class="work-grid">
+    {% for commission in active_commissions %}
+      <article class="work-card">
+        <div class="d-flex justify-content-between gap-3 align-items-start">
+          <div>
+            <h3>{{ commission.title }}</h3>
+            <div class="text-muted fw-semibold mt-1">#{{ commission.id }} · {{ commission.category ? commission.category.name : 'General' }}</div>
+          </div>
+          <span class="status-pill"><i class="bi bi-brush"></i> In Progress</span>
+        </div>
+
+        <div class="work-meta">
+          <div class="meta-row">
+            <span><i class="bi bi-person-heart me-1"></i> Client</span>
+            <strong>{{ commission.client ? commission.client.name : 'Unknown' }}</strong>
+          </div>
+          <div class="meta-row">
+            <span><i class="bi bi-envelope me-1"></i> Email</span>
+            <strong>{{ commission.client ? commission.client.email : '—' }}</strong>
+          </div>
+          <div class="meta-row">
+            <span><i class="bi bi-person-badge me-1"></i> Artist</span>
+            <strong>{{ commission.artist ? commission.artist.name : 'Unassigned' }}</strong>
+          </div>
+          <div class="meta-row">
+            <span><i class="bi bi-cash-coin me-1"></i> Price</span>
+            <strong>₱{{ commission.price|number_format(2, '.', ',') }}</strong>
+          </div>
+        </div>
+
+        <div class="work-actions">
+          <form method="post" action="{{ path('app_commission_complete', {'id': commission.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('complete_commission' ~ commission.id) }}">
+            <button type="submit" class="complete-btn">
+              <i class="bi bi-check2-circle"></i> Mark completed
+            </button>
+          </form>
+          <a href="{{ path('app_commission_show', {'id': commission.id}) }}" class="soft-btn">
+            <i class="bi bi-eye"></i> View
+          </a>
+          <a href="{{ path('app_commission_edit', {'id': commission.id}) }}" class="soft-btn">
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

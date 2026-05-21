@@ -1,0 +1,16 @@
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <style>
+    .btn-save {
+        background-color: #8b5cf6; /* Purple background */
+        color: white; /* White text */
+        padding: 10px 20px; /* Some padding */
+        border: none; /* No border */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 16px; /* Increase font size */
+        transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+    }
+    </style>
+    <button class="btn-save">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

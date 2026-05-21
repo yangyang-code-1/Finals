@@ -1,0 +1,45 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}New Commission{% endblock %}
+{% block header %}Create Commission{% endblock %}
+
+{% block body %}
+<div class="card shadow-sm border-0 mt-4" style="border-radius: 16px; background: #fff;">
+  <div class="card-header text-white" style="background: linear-gradient(135deg, #370d46ff, #8b5cf6); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+    <h5 class="mb-0 fw-semibold text-center">Add New Commission</h5>
+  </div>
+  <div class="card-body p-4">
+    {{ form_start(form, {'attr': {'class': 'commission-form'}}) }}
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          {{ form_label(form.title, 'Title') }}
+          {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-6">
+          {{ form_label(form.price, 'Price') }}
+          {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-6">
+          {{ form_label(form.category, 'Category') }}
+          {{ form_widget(form.category, {'attr': {'class': 'form-select'}}) }}
+        </div>
+        <div class="col-md-6">
+          {{ form_label(form.status, 'Status') }}
+          {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+        </div>
+        <div class="col-12">
+          {{ form_label(form.description, 'Description') }}
+          {{ form_widget(form.description, {'attr': {'rows': 4, 'class': 'form-control'}}) }}
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <button class="btn btn-primary px-4 py-2 rounded-pill" style="background:#370d46ff; border:none;">Create</button>
+        <a href="{{ path('app_commission_index') }}" class="btn btn-outline-secondary rounded-pill ms-2">Cancel</a>
+      </div>
+
+    {{ form_end(form) }}
+  </div>
+</div>
+{% endblock %}

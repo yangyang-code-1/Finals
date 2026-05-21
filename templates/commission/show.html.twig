@@ -1,0 +1,37 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}View Commission{% endblock %}
+{% block header %}Commission Details{% endblock %}
+
+{% block body %}
+<div class="card shadow-sm border-0 mt-4" style="border-radius: 16px; background: #fff;">
+  <div class="card-header text-white" style="background: linear-gradient(135deg, #370d46ff, #8b5cf6); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+    <h5 class="mb-0 fw-semibold text-center">Commission Info</h5>
+  </div>
+  <div class="card-body p-4">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item"><strong>ID:</strong> {{ commission.id }}</li>
+      <li class="list-group-item"><strong>Title:</strong> {{ commission.title }}</li>
+      <li class="list-group-item"><strong>Category:</strong> {{ commission.category }}</li>
+      <li class="list-group-item"><strong>Description:</strong> {{ commission.description }}</li>
+      <li class="list-group-item"><strong>Price:</strong> ₱{{ commission.price }}</li>
+      <li class="list-group-item"><strong>Status:</strong>
+        <span class="badge 
+          {% if commission.status == 'Completed' %} bg-success
+          {% elseif commission.status == 'Pending' %} bg-warning text-dark
+          {% else %} bg-secondary {% endif %}">
+          {{ commission.status }}
+        </span>
+      </li>
+      <li class="list-group-item"><strong>Created At:</strong> {{ commission.createdAt|date('Y-m-d H:i') }}</li>
+      <li class="list-group-item"><strong>Updated At:</strong> {{ commission.updatedAt ? commission.updatedAt|date('Y-m-d H:i') : 'N/A' }}</li>
+    </ul>
+
+    <div class="text-center mt-4">
+      <a href="{{ path('app_commission_index') }}" class="btn btn-outline-secondary rounded-pill">Back</a>
+      <a href="{{ path('app_commission_edit', {'id': commission.id}) }}" class="btn btn-primary rounded-pill ms-2" style="background:#370d46ff; border:none;">Edit</a>
+      {{ include('commission/_delete_form.html.twig') }}
+    </div>
+  </div>
+</div>
+{% endblock %}

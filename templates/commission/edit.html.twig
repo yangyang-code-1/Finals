@@ -1,0 +1,224 @@
+{% extends 'admin_base.html.twig' %}
+
+{% block title %}Edit Commission{% endblock %}
+{% block header %}Edit Commission{% endblock %}
+
+{% block body %}
+<style>
+body {
+  flex: 1;
+  background-color: #f9f5ff;
+}
+/* ====== COMMISSION FORM (ADMIN DASHBOARD) ====== */
+.commission-container {
+  padding: 40px;
+  max-width: 950px;
+  margin: 3rem auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+.commission-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  overflow: hidden;
+  border: none;
+  background: #fff;
+}
+
+.commission-card-header {
+  background: linear-gradient(135deg, #370d46ff, #8b5cf6);
+  color: white;
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.commission-card-body {
+  padding: 2.5rem;
+}
+
+/* Grid Layout for Large Screens */
+@media (min-width: 768px) {
+  .commission-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.commission-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.commission-form label {
+  font-weight: 600;
+  color: #4b0082;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.commission-form input,
+.commission-form textarea,
+.commission-form select {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.commission-form input:focus,
+.commission-form textarea:focus,
+.commission-form select:focus {
+  outline: none;
+  border-color: #370d46ff;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+}
+
+/* Buttons */
+.commission-form button,
+.commission-form a.btn {
+  border-radius: 9999px;
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.commission-form .btn-success {
+  background: #370d46ff;
+  color: white;
+  border: none;
+}
+
+.commission-form .btn-success:hover {
+  background: #7c3aed;
+  transform: scale(1.03);
+}
+
+.commission-form .btn-outline-secondary {
+  border: 2px solid #370d46ff;
+  color: #370d46ff;
+  background: white;
+}
+
+.commission-form .btn-outline-secondary:hover {
+  background: #370d46ff;
+  color: white;
+  transform: scale(1.03);
+}
+
+/* Flash Messages */
+.flash-message {
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.flash-success {
+  background-color: #e9fbe9;
+  color: #1e7e34;
+  border-left: 5px solid #28a745;
+}
+
+.flash-error {
+  background-color: #fce8e8;
+  color: #842029;
+  border-left: 5px solid #dc3545;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.btn-delete {
+  color: #fff;
+}
+.btn-update {
+  background-color: #370d46ff;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-right: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.btn-update:hover {
+  background-color: #7c3aed;
+  transform: scale(1.03);
+}
+
+.btn-back {
+  background-color: white;
+  color: #370d46ff;
+  border: 2px solid #370d46ff;
+  padding: 0.6rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 1rem;
+}
+
+.btn-back:hover {
+  background-color: #370d46ff;
+  color: white;
+  transform: scale(1.03);
+}
+</style>
+<div class="card shadow-sm border-0 mt-4" style="border-radius: 16px; background: #fff;">
+  <div class="card-header text-white" style="background: linear-gradient(135deg, #370d46ff, #8b5cf6); border-top-left-radius: 16px; border-top-right-radius: 16px;">
+    <h5 class="mb-0 fw-semibold text-center">Edit Commission</h5>
+  </div>
+  <div class="card-body p-4">
+    {{ form_start(form, {'attr': {'class': 'commission-form'}}) }}
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          {{ form_label(form.title, 'Title') }}
+          {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-6">
+          {{ form_label(form.price, 'Price') }}
+          {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-6">
+          {{ form_label(form.category, 'Category') }}
+          {{ form_widget(form.category, {'attr': {'class': 'form-select'}}) }}
+        </div>
+        <div class="col-md-6">
+          {{ form_label(form.status, 'Status') }}
+          {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+        </div>
+        <div class="col-12">
+          {{ form_label(form.description, 'Description') }}
+          {{ form_widget(form.description, {'attr': {'rows': 4, 'class': 'form-control'}}) }}
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <button class="btn btn-primary px-4 py-2 rounded-pill" style="background:#370d46ff; border:none;">Update</button>
+        <a href="{{ path('app_commission_index') }}" class="btn btn-outline-secondary rounded-pill ms-2">Back</a>
+      </div>
+
+    {{ form_end(form) }}
+    <div class="mt-3 text-center">
+      {{ include('commission/_delete_form.html.twig') }}
+    </div>
+  </div>
+</div>
+{% endblock %}

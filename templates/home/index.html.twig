@@ -1,0 +1,199 @@
+{% extends 'public/layout.html.twig' %}
+
+{% block title %}Comms — For the love of human creativity{% endblock %}
+
+{% block body %}
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <p class="lead" style="margin-bottom:0.5rem;font-size:0.95rem;letter-spacing:0.12em;text-transform:uppercase;opacity:0.92;">
+        Inspired by creator marketplaces like VGen
+      </p>
+      <h1>For the love of <span>human creativity</span></h1>
+      <p class="lead">
+        Everything you need for vtubing, illustration, character design, and content commissions — fans welcome too.
+      </p>
+      <p class="sub">
+        Browse open listings, preview artwork before you message, and start a collab that feels smooth from hello to final delivery.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ path('app_commissions_browse') }}" class="btn-hero">
+          <i class="bi bi-palette-fill"></i> Browse commissions
+        </a>
+        <a href="{{ path('app_register') }}" class="btn-hero ghost">
+          <i class="bi bi-stars"></i> Join as a client
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-section">
+    <div class="stats-strip reveal">
+      <div class="stat-card"><strong>280+</strong><span>Commission services</span></div>
+      <div class="stat-card"><strong>4.9★</strong><span>Average artist rating</span></div>
+      <div class="stat-card"><strong>48h</strong><span>Typical first reply</span></div>
+      <div class="stat-card"><strong>100%</strong><span>Human-made art</span></div>
+    </div>
+  </div>
+
+  <section class="section-block" id="why-comms">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-heart-fill"></i> Why Comms</div>
+        <h2>Made for creators &amp; clients</h2>
+        <p>Transparent listings, verified workflows, and a marketplace that celebrates real artists — the way platforms like VGen should feel.</p>
+      </div>
+      <div class="pillars">
+        <article class="pillar-card">
+          <div class="pillar-icon"><i class="bi bi-palette2"></i></div>
+          <h3>Made for creators</h3>
+          <p>Illustration, VTuber assets, emotes, stream overlays, music, and more — list your services and get discovered by clients who match your vibe.</p>
+        </article>
+        <article class="pillar-card">
+          <div class="pillar-icon"><i class="bi bi-shield-check"></i></div>
+          <h3>Verified, but private</h3>
+          <p>Verified artists, commission status, and reviews — while keeping sensitive details between you and the people you work with.</p>
+        </article>
+        <article class="pillar-card">
+          <div class="pillar-icon"><i class="bi bi-person-hearts"></i></div>
+          <h3>Human artistry first</h3>
+          <p>We celebrate original work from real artists. Comms is built for scroll-worthy discovery and commissions you can trust end to end.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" id="categories" style="padding-top:0;">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-grid-3x3-gap-fill"></i> Categories</div>
+        <h2>Explore commission types</h2>
+        <p>Jump into what you need — from chibi emotes to full character sheets.</p>
+      </div>
+      <div class="category-grid">
+        {% for cat in [
+          { icon: 'bi-brush', label: 'Illustrations' },
+          { icon: 'bi-person-bounding-box', label: '2D Avatars' },
+          { icon: 'bi-box', label: '3D Models' },
+          { icon: 'bi-emoji-smile', label: 'Emotes + Badges' },
+          { icon: 'bi-broadcast', label: 'Stream Assets' },
+          { icon: 'bi-badge-ad', label: 'Branding' },
+          { icon: 'bi-film', label: 'Animation' },
+          { icon: 'bi-music-note-beamed', label: 'Music + Audio' },
+          { icon: 'bi-pencil', label: 'Writing' },
+          { icon: 'bi-gift', label: 'Physical Goods' },
+          { icon: 'bi-chat-dots', label: 'Advice' },
+          { icon: 'bi-stars', label: 'Misc' },
+        ] %}
+          <a href="{{ path('app_commissions_browse') }}" class="category-pill">
+            <i class="bi {{ cat.icon }}"></i>
+            {{ cat.label }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" id="featured" style="background:linear-gradient(180deg, transparent, rgba(124,58,237,0.04));">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-lightning-charge-fill"></i> Open now</div>
+        <h2>Featured open commissions</h2>
+        <p>Swipe through listings with OPEN status, ratings, and clear pricing — just like browsing VGen’s trending queue.</p>
+      </div>
+      {% include 'public/_featured_commissions.html.twig' %}
+      <p style="text-align:center;margin-top:1.25rem;">
+        <a href="{{ path('app_commissions_browse') }}" style="font-weight:900;color:#7c3aed;text-decoration:none;">
+          View all commissions <i class="bi bi-arrow-right"></i>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section-block" id="how-it-works">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-signpost-split"></i> How it works</div>
+        <h2>From browse to delivered art</h2>
+        <p>Four simple steps — no confusion, no endless DMs before you know the price.</p>
+      </div>
+      <div class="steps">
+        <div class="step-card"><div class="step-num">1</div><h3>Discover</h3><p>Scroll categories, tags, and featured cards until something clicks.</p></div>
+        <div class="step-card"><div class="step-num">2</div><h3>Preview</h3><p>Open listings, check samples, and read scope before you reach out.</p></div>
+        <div class="step-card"><div class="step-num">3</div><h3>Connect</h3><p>Message through Contact or your account — we route inquiries fast.</p></div>
+        <div class="step-card"><div class="step-num">4</div><h3>Deliver</h3><p>Track progress with your artist and celebrate the final piece.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" style="padding-top:0;">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-hash"></i> Trending tags</div>
+        <h2>What people are searching</h2>
+      </div>
+      <div class="tag-cloud">
+        {% for tag in ['vtuber', 'ych', 'chibi', 'portrait', 'emotes', 'live2d', 'character design', 'fanart', 'stream assets', 'logo', 'full body', 'reference sheet', 'anime style', 'mascot', 'illustration'] %}
+          <a href="{{ path('app_commissions_browse') }}" class="tag">#{{ tag }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <div class="page-section reveal">
+      <div class="section-head">
+        <div class="kicker"><i class="bi bi-chat-quote-fill"></i> Loved by clients</div>
+        <h2>Stories from the community</h2>
+      </div>
+      <div class="testimonial-grid">
+        <blockquote class="testimonial">
+          <div class="stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+          <p>Found my VTuber artist in one evening. The browse page feels like VGen but way more personal for our class project.</p>
+          <footer class="who"><span class="ava">M</span> Maya · Client</footer>
+        </blockquote>
+        <blockquote class="testimonial">
+          <div class="stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+          <p>Preview modals and clear pricing sold me. I knew exactly what I was ordering before I hit send on the contact form.</p>
+          <footer class="who"><span class="ava">J</span> Jay · Streamer</footer>
+        </blockquote>
+        <blockquote class="testimonial">
+          <div class="stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></div>
+          <p>As staff, updating commissions in the dashboard and seeing them appear on the public browse page feels seamless.</p>
+          <footer class="who"><span class="ava">S</span> Staff reviewer</footer>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" style="padding-top:0;">
+    <div class="page-section reveal">
+      <div class="split">
+        <div class="story-card">
+          <div class="kicker"><i class="bi bi-people-fill"></i> About Comms</div>
+          <h3>A comfy home for commissions</h3>
+          <p>Comms helps customers browse listings and reach out quickly, while staff manage offerings behind the scenes.</p>
+          <p style="margin-top:1rem;"><a href="{{ path('app_about') }}" style="font-weight:900;color:#7c3aed;text-decoration:none;">Meet the team <i class="bi bi-arrow-right"></i></a></p>
+        </div>
+        <div class="story-card" style="background:linear-gradient(135deg, rgba(124,58,237,0.08), rgba(192,132,252,0.12));">
+          <div class="kicker"><i class="bi bi-envelope-heart"></i> Questions?</div>
+          <h3>We’re one message away</h3>
+          <p>Custom scope, rush deadlines, or collab ideas — our contact form delivers straight to the team inbox.</p>
+          <p style="margin-top:1rem;"><a href="{{ path('app_contact') }}" style="font-weight:900;color:#7c3aed;text-decoration:none;">Contact us <i class="bi bi-arrow-right"></i></a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" style="padding-bottom:5rem;">
+    <div class="cta-band reveal">
+      <h2>Ready to commission something today?</h2>
+      <p>Create a free account, browse open listings, and start a project that makes you excited to scroll back for updates.</p>
+      {% if app.user %}
+        <a href="{{ path('app_commissions_browse') }}" class="btn-hero">Open commissions</a>
+      {% else %}
+        <a href="{{ path('app_register') }}" class="btn-hero">Create free account</a>
+        <a href="{{ path('app_login') }}" class="btn-hero ghost">I already have an account</a>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}
