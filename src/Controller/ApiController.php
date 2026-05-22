@@ -72,13 +72,27 @@ class ApiController extends AbstractController
             'status' => $commission->getStatus(),
             'categoryName' => $category?->getName(),
             'artistName' => $artist?->getName() ?? 'Artist',
-            'isAvailable' => $client === null,
+            'isAvailable' => true,
             'isMine' => $client !== null && $client->getId() === $userId,
             'createdAt' => $commission->getCreatedAt()?->format(\DateTimeInterface::ATOM),
             'updatedAt' => $commission->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
             'imageFilename' => $imageFilename,
             'imagePath' => '/commissions_images/'.$imageFilename,
         ];
+    }
+
+    private function createCommissionRequest(Commission $listing, User $client): Commission
+    {
+        $request = new Commission();
+        $request->setTitle($listing->getTitle() ?? 'Untitled commission');
+        $request->setDescription($listing->getDescription() ?? '');
+        $request->setPrice((float) $listing->getPrice());
+        $request->setCategory($listing->getCategory());
+        $request->setArtist($listing->getArtist());
+        $request->setClient($client);
+        $request->setStatus('Pending');
+
+        return $request;
     }
 
     /**
@@ -162,22 +176,20 @@ class ApiController extends AbstractController
         }
 
         $client = $commission->getClient();
-        if ($client !== null && $client->getId() !== $user->getId()) {
-            return $this->jsonError(
-                ['commission' => ['That commission slot is already reserved by another client.']],
-                Response::HTTP_CONFLICT
+        if ($client !== null && $client->getId() === $user->getId()) {
+            return $this->jsonOk(
+                ['commission' => $this->serializeCommission($commission, $user->getId())],
+                'You already requested this commission.'
             );
         }
 
-        if ($client === null) {
-            $commission->setClient($user);
-            $commission->setStatus('Pending');
-        }
+        $commissionRequest = $this->createCommissionRequest($commission, $user);
+        $entityManager->persist($commissionRequest);
 
         $entityManager->flush();
 
         return $this->jsonOk(
-            ['commission' => $this->serializeCommission($commission, $user->getId())],
+            ['commission' => $this->serializeCommission($commissionRequest, $user->getId())],
             'Commission requested. You can now track it from My progress.'
         );
     }

@@ -54,16 +54,22 @@ final class CommissionBrowseController extends AbstractController
         }
 
         $client = $commission->getClient();
-        if ($client !== null && $client !== $user) {
-            $this->addFlash('danger', 'That commission slot is already reserved by another client.');
+        if ($client !== null && $client === $user) {
+            $this->addFlash('info', 'You already requested this commission.');
 
-            return $this->redirectToRoute('app_commissions_browse');
+            return $this->redirectToRoute('app_account_progress');
         }
 
-        if ($client === null) {
-            $commission->setClient($user);
-            $commission->setStatus('Pending');
-        }
+        $commissionRequest = new Commission();
+        $commissionRequest->setTitle($commission->getTitle() ?? 'Untitled commission');
+        $commissionRequest->setDescription($commission->getDescription() ?? '');
+        $commissionRequest->setPrice((float) $commission->getPrice());
+        $commissionRequest->setCategory($commission->getCategory());
+        $commissionRequest->setArtist($commission->getArtist());
+        $commissionRequest->setClient($user);
+        $commissionRequest->setStatus('Pending');
+
+        $entityManager->persist($commissionRequest);
         $entityManager->flush();
 
         $this->addFlash('info', 'Commission requested. You can now track artist progress from your timeline.');
