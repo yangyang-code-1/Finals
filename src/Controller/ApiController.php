@@ -9,6 +9,7 @@ use App\Repository\CommissionRepository;
 use App\Repository\UserRepository;
 use App\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -108,6 +109,48 @@ class ApiController extends AbstractController
         ], $categories);
 
         return $this->jsonOk(['categories' => $data]);
+    }
+
+    #[Route('/mobile/login', name: 'api_mobile_login', methods: ['POST'])]
+    public function mobileLogin(
+        Request $request,
+        UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordHasher,
+        JWTTokenManagerInterface $jwtManager,
+    ): JsonResponse {
+        $payload = json_decode($request->getContent(), true);
+        if (!\is_array($payload)) {
+            return $this->jsonError(['body' => ['Invalid or empty JSON body.']], Response::HTTP_BAD_REQUEST);
+        }
+
+        $email = trim((string) ($payload['email'] ?? ''));
+        $password = (string) ($payload['password'] ?? '');
+        if ($email === '' || $password === '') {
+            return $this->jsonError(['auth' => ['Email and password are required.']], Response::HTTP_BAD_REQUEST);
+        }
+
+        $user = $userRepository->findOneBy(['email' => $email]);
+        if (!$user instanceof User || !$passwordHasher->isPasswordValid($user, $password)) {
+            return $this->jsonError(['auth' => ['Invalid email or password.']], Response::HTTP_UNAUTHORIZED);
+        }
+
+        try {
+            $token = $jwtManager->create($user);
+        } catch (\Throwable) {
+            return $this->jsonError(
+                ['jwt' => ['JWT is not configured correctly on the backend. Check Railway JWT_SECRET_KEY, JWT_PUBLIC_KEY, and JWT_PASSPHRASE.']],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        return new JsonResponse([
+            'token' => $token,
+            'user' => [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+                'email' => $user->getEmail(),
+            ],
+        ]);
     }
 
     /**
