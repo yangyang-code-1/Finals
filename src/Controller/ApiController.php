@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Commission;
 use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\CommissionRepository;
@@ -20,6 +21,15 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/api')]
 class ApiController extends AbstractController
 {
+    private const COMMISSION_IMAGES = [
+        'birthday_photoshoot.jpg',
+        'Character_design.PNG',
+        'icon.jpg',
+        'illustration.png',
+        'Portrait.JPG',
+        'Sunset.jpg',
+    ];
+
     /**
      * Standard envelope for mobile-friendly JSON (criterion 8).
      *
@@ -46,6 +56,31 @@ class ApiController extends AbstractController
         ], $status);
     }
 
+    private function serializeCommission(Commission $commission, ?int $userId = null): array
+    {
+        $category = $commission->getCategory();
+        $artist = $commission->getArtist();
+        $client = $commission->getClient();
+        $imageIndex = max(0, ((int) $commission->getId()) - 1) % count(self::COMMISSION_IMAGES);
+        $imageFilename = self::COMMISSION_IMAGES[$imageIndex];
+
+        return [
+            'id' => $commission->getId(),
+            'title' => $commission->getTitle(),
+            'description' => $commission->getDescription(),
+            'price' => $commission->getPrice(),
+            'status' => $commission->getStatus(),
+            'categoryName' => $category?->getName(),
+            'artistName' => $artist?->getName() ?? 'Artist',
+            'isAvailable' => $client === null,
+            'isMine' => $client !== null && $client->getId() === $userId,
+            'createdAt' => $commission->getCreatedAt()?->format(\DateTimeInterface::ATOM),
+            'updatedAt' => $commission->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
+            'imageFilename' => $imageFilename,
+            'imagePath' => '/commissions_images/'.$imageFilename,
+        ];
+    }
+
     /**
      * Mobile API Endpoint 1: List Categories
      */
@@ -59,6 +94,92 @@ class ApiController extends AbstractController
         ], $categories);
 
         return $this->jsonOk(['categories' => $data]);
+    }
+
+    /**
+     * Mobile-safe commission list. This avoids the API Platform /api/commissions route.
+     */
+    #[Route('/mobile/commissions', name: 'api_mobile_commissions', methods: ['GET'])]
+    public function getMobileCommissions(CommissionRepository $repository): JsonResponse
+    {
+        $user = $this->getUser();
+        $userId = $user instanceof User ? $user->getId() : null;
+        $data = array_map(
+            fn (Commission $commission): array => $this->serializeCommission($commission, $userId),
+            $repository->findForBrowse()
+        );
+
+        return $this->jsonOk(['commissions' => $data]);
+    }
+
+    /**
+     * Mobile customer timeline: only commissions requested by the current customer.
+     */
+    #[Route('/mobile/progress', name: 'api_mobile_progress', methods: ['GET'])]
+    public function getMobileProgress(CommissionRepository $repository): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->jsonError(['auth' => ['Not authenticated.']], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $data = array_map(
+            fn (Commission $commission): array => $this->serializeCommission($commission, $user->getId()),
+            $repository->findForClientProgress($user)
+        );
+
+        return $this->jsonOk(['commissions' => $data]);
+    }
+
+    #[Route('/mobile/commissions/{id}', name: 'api_mobile_commission_detail', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function getMobileCommission(int $id, CommissionRepository $repository): JsonResponse
+    {
+        $commission = $repository->find($id);
+        if ($commission === null) {
+            return $this->jsonError(['commission' => ['Commission not found.']], Response::HTTP_NOT_FOUND);
+        }
+
+        $user = $this->getUser();
+        $userId = $user instanceof User ? $user->getId() : null;
+
+        return $this->jsonOk(['commission' => $this->serializeCommission($commission, $userId)]);
+    }
+
+    #[Route('/mobile/commissions/{id}/request', name: 'api_mobile_commission_request', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function requestMobileCommission(
+        int $id,
+        CommissionRepository $repository,
+        EntityManagerInterface $entityManager,
+    ): JsonResponse {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->jsonError(['auth' => ['Not authenticated.']], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $commission = $repository->find($id);
+        if ($commission === null) {
+            return $this->jsonError(['commission' => ['Commission not found.']], Response::HTTP_NOT_FOUND);
+        }
+
+        $client = $commission->getClient();
+        if ($client !== null && $client->getId() !== $user->getId()) {
+            return $this->jsonError(
+                ['commission' => ['That commission slot is already reserved by another client.']],
+                Response::HTTP_CONFLICT
+            );
+        }
+
+        $commission->setClient($user);
+        if ($commission->getStatus() === null || $commission->getStatus() === 'Cancelled') {
+            $commission->setStatus('Pending');
+        }
+
+        $entityManager->flush();
+
+        return $this->jsonOk(
+            ['commission' => $this->serializeCommission($commission, $user->getId())],
+            'Commission requested. You can now track it from My progress.'
+        );
     }
 
     /**

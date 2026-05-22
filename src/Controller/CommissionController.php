@@ -51,17 +51,12 @@ final class CommissionController extends AbstractController
             throw $this->createAccessDeniedException('Access Denied.');
         }
 
-        $user = $this->getUser();
-        $requests = $commissionRepository->findPendingRequests(
-            $this->isGranted('ROLE_ADMIN') || !$user instanceof User ? null : $user
-        );
+        $requests = $commissionRepository->findPendingRequests();
 
         return $this->render('commission/requests.html.twig', [
             'requests' => $requests,
             'pending_request_count' => count($requests),
-            'active_commission_count' => count($commissionRepository->findActiveClientCommissions(
-                $this->isGranted('ROLE_ADMIN') || !$user instanceof User ? null : $user
-            )),
+            'active_commission_count' => count($commissionRepository->findActiveClientCommissions()),
         ]);
     }
 
@@ -72,17 +67,12 @@ final class CommissionController extends AbstractController
             throw $this->createAccessDeniedException('Access Denied.');
         }
 
-        $user = $this->getUser();
-        $activeCommissions = $commissionRepository->findActiveClientCommissions(
-            $this->isGranted('ROLE_ADMIN') || !$user instanceof User ? null : $user
-        );
+        $activeCommissions = $commissionRepository->findActiveClientCommissions();
 
         return $this->render('commission/active.html.twig', [
             'active_commissions' => $activeCommissions,
             'active_commission_count' => count($activeCommissions),
-            'pending_request_count' => count($commissionRepository->findPendingRequests(
-                $this->isGranted('ROLE_ADMIN') || !$user instanceof User ? null : $user
-            )),
+            'pending_request_count' => count($commissionRepository->findPendingRequests()),
         ]);
     }
 
@@ -92,14 +82,9 @@ final class CommissionController extends AbstractController
         Commission $commission,
         EntityManagerInterface $entityManager,
     ): Response {
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
-            throw $this->createAccessDeniedException('Access Denied.');
-        }
+        $this->denyAccessUnlessGranted('ROLE_STAFF');
 
         $user = $this->getUser();
-        if (!$this->isGranted('ROLE_ADMIN') && $user instanceof User && $commission->getArtist() !== $user) {
-            throw $this->createAccessDeniedException('You can only accept requests for your own commissions.');
-        }
 
         if (!$this->isCsrfTokenValid('accept_commission'.$commission->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Invalid request token.');
@@ -134,14 +119,9 @@ final class CommissionController extends AbstractController
         Commission $commission,
         EntityManagerInterface $entityManager,
     ): Response {
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
-            throw $this->createAccessDeniedException('Access Denied.');
-        }
+        $this->denyAccessUnlessGranted('ROLE_STAFF');
 
         $user = $this->getUser();
-        if (!$this->isGranted('ROLE_ADMIN') && $user instanceof User && $commission->getArtist() !== $user) {
-            throw $this->createAccessDeniedException('You can only complete your own commissions.');
-        }
 
         if (!$this->isCsrfTokenValid('complete_commission'.$commission->getId(), (string) $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Invalid request token.');
