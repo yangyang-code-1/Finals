@@ -30,17 +30,12 @@ final class CommissionController extends AbstractController
             throw $this->createAccessDeniedException('Access Denied.');
         }
 
-        $user = $this->getUser();
-        $pendingRequests = $commissionRepository->findPendingRequests(
-            $this->isGranted('ROLE_ADMIN') || !$user instanceof User ? null : $user
-        );
+        $pendingRequests = $commissionRepository->findPendingRequests();
 
         return $this->render('commission/index.html.twig', [
             'commissions' => $commissionRepository->findAll(),
             'pending_request_count' => count($pendingRequests),
-            'active_commission_count' => count($commissionRepository->findActiveClientCommissions(
-                $this->isGranted('ROLE_ADMIN') || !$user instanceof User ? null : $user
-            )),
+            'active_commission_count' => count($commissionRepository->findActiveClientCommissions()),
         ]);
     }
 

@@ -398,7 +398,8 @@
           <a href="{{ path('app_commission_requests') }}" class="admin-icon-btn" title="Slot requests">
             <i class="bi bi-bell"></i>
           </a>
-          {% if notifications_count is defined and notifications_count > 0 %}
+          {% set slot_request_notifications = notifications_count|default(pending_request_count|default(0)) %}
+          {% if slot_request_notifications > 0 %}
             <span class="badge bg-danger position-absolute top-0 start-100 translate-middle p-1 rounded-circle"></span>
           {% endif %}
         </div>
