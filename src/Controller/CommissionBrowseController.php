@@ -60,8 +60,8 @@ final class CommissionBrowseController extends AbstractController
             return $this->redirectToRoute('app_commissions_browse');
         }
 
-        $commission->setClient($user);
-        if ($commission->getStatus() === null || $commission->getStatus() === 'Cancelled') {
+        if ($client === null) {
+            $commission->setClient($user);
             $commission->setStatus('Pending');
         }
         $entityManager->flush();

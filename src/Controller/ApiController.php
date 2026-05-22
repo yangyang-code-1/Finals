@@ -169,8 +169,8 @@ class ApiController extends AbstractController
             );
         }
 
-        $commission->setClient($user);
-        if ($commission->getStatus() === null || $commission->getStatus() === 'Cancelled') {
+        if ($client === null) {
+            $commission->setClient($user);
             $commission->setStatus('Pending');
         }
 
