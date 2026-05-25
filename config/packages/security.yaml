@@ -72,7 +72,8 @@ security:
         - { path: ^/category, roles: [ROLE_ADMIN, ROLE_STAFF] }
         - { path: ^/commission/requests, roles: [ROLE_ADMIN, ROLE_STAFF] }
         - { path: ^/commission/active, roles: [ROLE_ADMIN, ROLE_STAFF] }
-        - { path: ^/commission/\d+/(accept|complete), roles: ROLE_STAFF }
+        - { path: ^/commission/\d+/accept, roles: [ROLE_ADMIN, ROLE_STAFF] }
+        - { path: ^/commission/\d+/complete, roles: ROLE_STAFF }
         - { path: ^/commission(/|$), roles: [ROLE_ADMIN, ROLE_STAFF] }
 
 when@test:

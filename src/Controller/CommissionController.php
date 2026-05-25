@@ -77,7 +77,9 @@ final class CommissionController extends AbstractController
         Commission $commission,
         EntityManagerInterface $entityManager,
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_STAFF');
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
+            throw $this->createAccessDeniedException('Access Denied.');
+        }
 
         $user = $this->getUser();
 
