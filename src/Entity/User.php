@@ -50,15 +50,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $verificationToken = null;
 
-    #[ORM\Column(name: 'fcm_token', length: 512, nullable: true)]
-    private ?string $fcmToken = null;
-
-    #[ORM\Column(name: 'fcm_platform', length: 20, nullable: true)]
-    private ?string $fcmPlatform = null;
-
-    #[ORM\Column(name: 'fcm_token_updated_at', nullable: true)]
-    private ?\DateTimeImmutable $fcmTokenUpdatedAt = null;
-
     public function __construct()
     {
         $this->commissionsCreated = new ArrayCollection();
@@ -193,42 +184,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVerificationToken(?string $verificationToken): static
     {
         $this->verificationToken = $verificationToken;
-
-        return $this;
-    }
-
-    public function getFcmToken(): ?string
-    {
-        return $this->fcmToken;
-    }
-
-    public function setFcmToken(?string $fcmToken): static
-    {
-        $this->fcmToken = $fcmToken;
-
-        return $this;
-    }
-
-    public function getFcmPlatform(): ?string
-    {
-        return $this->fcmPlatform;
-    }
-
-    public function setFcmPlatform(?string $fcmPlatform): static
-    {
-        $this->fcmPlatform = $fcmPlatform;
-
-        return $this;
-    }
-
-    public function getFcmTokenUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->fcmTokenUpdatedAt;
-    }
-
-    public function setFcmTokenUpdatedAt(?\DateTimeImmutable $fcmTokenUpdatedAt): static
-    {
-        $this->fcmTokenUpdatedAt = $fcmTokenUpdatedAt;
 
         return $this;
     }

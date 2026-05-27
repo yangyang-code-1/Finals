@@ -16,9 +16,6 @@ services:
     App\:
         resource: '../src/'
 
-    App\Service\FcmNotificationService:
-        arguments:
-            $firebaseCredentialsPath: '%env(resolve:FIREBASE_CREDENTIALS)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
