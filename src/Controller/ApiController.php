@@ -280,6 +280,43 @@ class ApiController extends AbstractController
     }
 
     /**
+     * Mobile API: save the current device's Firebase Cloud Messaging token.
+     */
+    #[Route('/notification-token', name: 'api_notification_token', methods: ['POST'])]
+    public function saveNotificationToken(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->jsonError(['auth' => ['Not authenticated.']], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $payload = json_decode($request->getContent(), true);
+        if (!\is_array($payload)) {
+            return $this->jsonError(['body' => ['Invalid or empty JSON body.']], Response::HTTP_BAD_REQUEST);
+        }
+
+        $token = trim((string) ($payload['token'] ?? ''));
+        if ($token === '') {
+            return $this->jsonError(['token' => ['Notification token is required.']], Response::HTTP_BAD_REQUEST);
+        }
+
+        $platform = strtolower(trim((string) ($payload['platform'] ?? 'android')));
+        if (!\in_array($platform, ['android', 'ios', 'web'], true)) {
+            return $this->jsonError(['platform' => ['Platform must be android, ios, or web.']], Response::HTTP_BAD_REQUEST);
+        }
+
+        $user->setFcmToken($token);
+        $user->setFcmPlatform($platform);
+        $user->setFcmTokenUpdatedAt(new \DateTimeImmutable());
+        $entityManager->flush();
+
+        return $this->jsonOk([
+            'notificationTokenRegistered' => true,
+            'platform' => $platform,
+        ]);
+    }
+
+    /**
      * Mobile API: current authenticated customer profile.
      */
     #[Route('/me', name: 'api_me', methods: ['GET'])]
