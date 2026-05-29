@@ -11,6 +11,7 @@ use App\Repository\CategoryRepository;
 use App\Service\ActivityLogService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -76,6 +77,7 @@ final class CommissionController extends AbstractController
         Request $request,
         Commission $commission,
         EntityManagerInterface $entityManager,
+        HttpClientInterface $httpClient,
     ): Response {
         if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
             throw $this->createAccessDeniedException('Access Denied.');
@@ -95,6 +97,7 @@ final class CommissionController extends AbstractController
 
         $commission->setStatus('In Progress');
         $entityManager->flush();
+        $this->notifyRealtimeProgress($httpClient, $commission, 'Your commission request was accepted.');
 
         if ($user instanceof User) {
             $this->activityLogService->logUpdate(
@@ -115,8 +118,11 @@ final class CommissionController extends AbstractController
         Request $request,
         Commission $commission,
         EntityManagerInterface $entityManager,
+        HttpClientInterface $httpClient,
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_STAFF');
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
+            throw $this->createAccessDeniedException('Access Denied.');
+        }
 
         $user = $this->getUser();
 
@@ -132,6 +138,7 @@ final class CommissionController extends AbstractController
 
         $commission->setStatus('Completed');
         $entityManager->flush();
+        $this->notifyRealtimeProgress($httpClient, $commission, 'Your commission was marked completed.');
 
         if ($user instanceof User) {
             $this->activityLogService->logUpdate(
@@ -272,5 +279,31 @@ final class CommissionController extends AbstractController
         }
 
         return $this->redirectToRoute('app_commission_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function notifyRealtimeProgress(
+        HttpClientInterface $httpClient,
+        Commission $commission,
+        string $message,
+    ): void {
+        $client = $commission->getClient();
+        if (!$client instanceof User) {
+            return;
+        }
+
+        try {
+            $httpClient->request('POST', 'https://websocket-production-93ef.up.railway.app/internal/progress-updated', [
+                'json' => [
+                    'userId' => $client->getId(),
+                    'requestId' => $commission->getId(),
+                    'commissionId' => $commission->getId(),
+                    'status' => $commission->getStatus(),
+                    'message' => $message,
+                    'title' => $commission->getTitle(),
+                ],
+            ]);
+        } catch (\Throwable) {
+            // Realtime updates are best-effort; the normal admin action should still succeed.
+        }
     }
 }
