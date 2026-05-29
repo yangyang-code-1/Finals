@@ -657,7 +657,18 @@
         const title = data?.title || 'Commission request';
         showRealtimeToast(`New mobile request: ${title}`);
 
-        const refreshPaths = ['/admin', '/commission', '/commission/requests'];
+        const refreshPaths = ['/admin', '/commission', '/commission/requests', '/commission/active'];
+        if (refreshPaths.includes(window.location.pathname)) {
+          window.setTimeout(() => window.location.reload(), 1200);
+        }
+      });
+
+      socket.on('progress_updated', (data) => {
+        const title = data?.title || 'Commission';
+        const status = data?.status || 'updated';
+        showRealtimeToast(`${title} is now ${status}`);
+
+        const refreshPaths = ['/admin', '/commission', '/commission/requests', '/commission/active'];
         if (refreshPaths.includes(window.location.pathname)) {
           window.setTimeout(() => window.location.reload(), 1200);
         }
