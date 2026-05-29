@@ -219,6 +219,27 @@
       background:var(--bg-light);
       color:var(--accent);
     }
+    .realtime-toast{
+      position:fixed;
+      right:1rem;
+      bottom:1rem;
+      z-index:2000;
+      max-width:min(360px, calc(100vw - 2rem));
+      padding:1rem;
+      border-radius:18px;
+      color:#fff;
+      background:linear-gradient(135deg,#4b0082,#7c3aed);
+      box-shadow:0 20px 50px rgba(42,18,75,0.25);
+      font-weight:800;
+      opacity:0;
+      transform:translateY(12px);
+      pointer-events:none;
+      transition:opacity .2s ease, transform .2s ease;
+    }
+    .realtime-toast.show{
+      opacity:1;
+      transform:translateY(0);
+    }
 
     .dashboard-eyebrow{
       display:inline-flex;
@@ -529,6 +550,7 @@
   <!-- DataTables -->
   <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
 
   <script>
     // toggle sidebar collapse
@@ -596,6 +618,51 @@
     //  }
     //}); 
     // DUPLICATE NI
+  </script>
+
+  <script>
+    (function () {
+      const realtimeUrl = 'https://websocket-production-93ef.up.railway.app';
+
+      if (!window.io) {
+        console.warn('Socket.IO client was not loaded.');
+        return;
+      }
+
+      const toast = document.createElement('div');
+      toast.className = 'realtime-toast';
+      document.body.appendChild(toast);
+
+      function showRealtimeToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        window.setTimeout(() => toast.classList.remove('show'), 3500);
+      }
+
+      const socket = window.io(realtimeUrl, {
+        reconnectionAttempts: 5,
+        timeout: 10000,
+      });
+
+      socket.on('connect', () => {
+        socket.emit('join_admin_room');
+        console.log('Admin realtime connected:', socket.id);
+      });
+
+      socket.on('connect_error', (error) => {
+        console.warn('Admin realtime connection error:', error.message);
+      });
+
+      socket.on('commission_request_created', (data) => {
+        const title = data?.title || 'Commission request';
+        showRealtimeToast(`New mobile request: ${title}`);
+
+        const refreshPaths = ['/admin', '/commission', '/commission/requests'];
+        if (refreshPaths.includes(window.location.pathname)) {
+          window.setTimeout(() => window.location.reload(), 1200);
+        }
+      });
+    })();
   </script>
 
   {% block scripts %}{% endblock %}
